@@ -1,0 +1,10 @@
+---
+ref: errors
+name: errors
+description: Error pack used to generate errors for tasks/workflows
+keywords: 
+    - cookiecutter
+    -  errors
+version: 0.1.0
+author: Alex Chrystal
+email: code@encore.tech

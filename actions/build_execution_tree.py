@@ -48,3 +48,5 @@ class BuildExecutionTree(BaseAction):
             if has_child:
                 for c in execution.children:
                     self.get_execution_tree(c, delimeter + '   ')
+
+        return self.task_list

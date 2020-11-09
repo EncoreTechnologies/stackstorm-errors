@@ -17,20 +17,7 @@ from lib.base_action import BaseAction
 
 class BuildExecutionTree(BaseAction):
 
-    def run(self, **kwargs):
-
-        kwargs_dict = dict(kwargs)
-
-        st2_exe_id = self.get_arg("st2_exe_id", kwargs_dict, False)
-
-        parent_execution = self.st2_client_initialize(st2_exe_id)
-        self.task_list = []
-        delimeter = '   '
-
-        parent_task_name = '+> ' + parent_execution.action['ref']
-        self.task_list.append({'name': parent_task_name,
-                               'status': parent_execution.status})
-
+    def get_execution_tree(self, parent_execution, delimeter):
         if hasattr(parent_execution, 'children'):
             for m in parent_execution.children:
                 self.get_execution_tree(m, delimeter)
@@ -50,3 +37,19 @@ class BuildExecutionTree(BaseAction):
                     self.get_execution_tree(c, delimeter + '   ')
 
         return self.task_list
+
+    def run(self, **kwargs):
+
+        kwargs_dict = dict(kwargs)
+
+        st2_exe_id = self.get_arg("st2_exe_id", kwargs_dict, False)
+
+        parent_execution = self.st2_client_initialize(st2_exe_id)
+        self.task_list = []
+        delimeter = '   '
+
+        parent_task_name = '+> ' + parent_execution.action['ref']
+        self.task_list.append({'name': parent_task_name,
+                               'status': parent_execution.status})
+
+        return self.get_execution_tree(parent_execution, delimeter)

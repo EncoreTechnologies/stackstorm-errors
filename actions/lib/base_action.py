@@ -19,8 +19,8 @@ from st2client.client import Client
 
 class BaseAction(Action):
 
-	def __init__(self, config):
-		"""Creates a new BaseAction given a StackStorm config object (kwargs works too)
+    def __init__(self, config):
+        """Creates a new BaseAction given a StackStorm config object (kwargs works too)
         :param config: StackStorm configuration object for the pack
         :returns: a new BaseAction
         """

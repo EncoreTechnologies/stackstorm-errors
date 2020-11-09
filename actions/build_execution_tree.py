@@ -17,15 +17,21 @@ from lib.base_action import BaseAction
 
 class BuildExecutionTree(BaseAction):
 
-	def run(self, **kwargs):
+    def run(self, **kwargs):
 
-		kwargs_dict = dict(kwargs)
+        kwargs_dict = dict(kwargs)
 
-		st2_exe_id = self.get_arg("st2_exe_id", kwargs_dict, True)
+        st2_exe_id = self.get_arg("st2_exe_id", kwargs_dict, False)
 
-		vm_execution = self.st2_client_initialize(st2_exe_id)
+        parent_execution = self.st2_client_initialize(st2_exe_id)
+        self.task_list = []
+        delimeter = '   '
 
-		if hasattr(parent_execution, 'children'):
+        parent_task_name = '+> ' + parent_execution.action['ref']
+        self.task_list.append({'name': parent_task_name,
+                               'status': parent_execution.status})
+
+        if hasattr(parent_execution, 'children'):
             for m in parent_execution.children:
                 self.get_execution_tree(m, delimeter)
         else:

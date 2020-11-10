@@ -92,11 +92,11 @@ class GetFormattedError(BaseAction):
             if 'error' in error_result['output']:
                 return error_result['output']['error']
 
-        # Jinja
+        # Jinja syntax errors
         if 'errors' in error_result:
             return error_result['errors'][0]['message']
 
-        # Bolt plans
+        # Bolt plans (https://github.com/StackStorm-Exchange/stackstorm-bolt)
         if ('result' in error_result and
            error_result['result'] and
            error_result['result'] != 'None'):

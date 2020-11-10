@@ -1,5 +1,5 @@
 ---
-description: "Builds an execution tree of the failing task"
+description: "Builds an execution tree of the given task"
 enabled: true
 runner_type: "python-script"
 entry_point: build_execution_tree.py

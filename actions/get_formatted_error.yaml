@@ -1,5 +1,5 @@
 ---
-description: "Finds and formats the error found in the given execution tree"
+description: "Finds an error in the given task and formats the result into an HTML tagged output"
 enabled: true
 runner_type: "python-script"
 entry_point: get_formatted_error.py

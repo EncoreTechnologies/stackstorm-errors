@@ -26,20 +26,6 @@ class BaseAction(Action):
         """
         super(BaseAction, self).__init__(config)
 
-    def get_arg(self, key, kwargs_dict, delete=False):
-        """Attempts to retrieve an argument from kwargs with key.
-        If the key is found, then delete it from the dict.
-        :param key: the key of the argument to retrieve from kwargs
-        :returns: The value of key in kwargs, if it exists, otherwise None
-        """
-        if key in kwargs_dict:
-            value = kwargs_dict[key]
-            if delete:
-                del kwargs_dict[key]
-            return value
-        else:
-            return None
-
     def st2_client_initialize(self, st2_exe_id):
         st2_fqdn = socket.getfqdn()
         st2_url = "https://{}/".format(st2_fqdn)

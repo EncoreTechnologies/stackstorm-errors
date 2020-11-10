@@ -1,0 +1,11 @@
+---
+description: "Finds and formats the error found in the given execution tree"
+enabled: true
+runner_type: "python-script"
+entry_point: get_formatted_error.py
+name: get_formatted_error
+parameters:
+  st2_exe_id:
+    type: string
+    description: "Parent execution of the failing action"
+    required: true

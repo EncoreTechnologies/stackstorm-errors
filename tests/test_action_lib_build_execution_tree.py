@@ -76,10 +76,8 @@ class TestBuildExecutionTree(ErrorsBaseActionTestCase):
 
         expected_return = [
             {
-                'name': "test_ref",
                 'status': "succeeded",
-                'name': "<pre><code>   +> vsphere_check</pre></code>",
-                'status': "succeeded"
+                'name': "<pre><code>   +> vsphere_check</pre></code>"
             }
         ]
 

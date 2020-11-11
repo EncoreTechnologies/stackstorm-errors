@@ -266,3 +266,41 @@ class TestGetFormattedError(ErrorsBaseActionTestCase):
         }
         result = action.get_error_message(test_error_result)
         self.assertEqual(result, expected_result)
+
+    @mock.patch("lib.base_action.BaseAction.st2_client_initialize")
+    @mock.patch("get_formatted_error.GetFormattedError.find_error_execution")
+    @mock.patch("get_formatted_error.GetFormattedError.format_error")
+    @mock.patch("get_formatted_error.GetFormattedError.format_error_strings")
+    @mock.patch("get_formatted_error.GetFormattedError.get_error_message")
+    def test_run(self,
+                 mock_get_error_message,
+                 mock_format_error_strings,
+                 mock_format_error,
+                 mock_find_error_execution,
+                 mock_st2_client_intialize):
+
+        action = self.get_action_instance({})
+        kwargs_dict = {'st2_exe_id': '1234'}
+
+        mock_context = {
+            'orquesta': {
+                'task_name': 'vsphere_check'
+            }
+        }
+        test_execution = mock.Mock(children=[], context=mock_context, status='failed')
+        mock_client = mock.Mock()
+        mock_client.executions.get_by_id.return_value = test_execution
+        mock_st2_client_intialize.return_value = test_execution
+
+        mock_format_error.return_value = ("ST2 Execution ID - 1234<br>"
+                                          "Error task: vsphere_check<br>"
+                                          "Error execution ID: 123<br>"
+                                          "Error message: test_error<br>")
+
+        expected_return = ("ST2 Execution ID - 1234<br>"
+                           "Error task: vsphere_check<br>"
+                           "Error execution ID: 123<br>"
+                           "Error message: test_error<br>")
+
+        result = action.run(**kwargs_dict)
+        self.assertEqual(result, expected_return)

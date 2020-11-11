@@ -17,10 +17,12 @@ import re
 from six import string_types
 from lib.base_action import BaseAction
 
+
 IGNORED_ERROR_TASKS = [
     'send_error_email',
     'provision_cleanup_exec'
 ]
+
 
 class GetFormattedError(BaseAction):
 
@@ -128,4 +130,3 @@ class GetFormattedError(BaseAction):
         self.find_error_execution(parent_execution)
 
         return self.format_error(st2_exe_id)
-

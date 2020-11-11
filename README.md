@@ -45,7 +45,7 @@ Workflow usage:
 get_error_execution_tree:
   action: errors.build_execution_tree
   input:
-    st2_exe_id: 5fa45525935a74a08162cd7b
+    st2_exe_id: "5fa45525935a74a08162cd7b"
 ```
 
 ### Action Example - errors.get_formatted_error

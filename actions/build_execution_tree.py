@@ -15,7 +15,15 @@
 
 from lib.base_action import BaseAction
 
+
 class BuildExecutionTree(BaseAction):
+
+    def __init__(self, config):
+        """Creates a new BaseAction given a StackStorm config object (kwargs works too)
+        :param config: StackStorm configuration object for the pack
+        :returns: a new BaseAction
+        """
+        super(BuildExecutionTree, self).__init__(config)
 
     def get_execution_tree(self, parent_execution, delimeter):
         if hasattr(parent_execution, 'children'):

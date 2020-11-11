@@ -7,5 +7,5 @@ name: get_formatted_error
 parameters:
   st2_exe_id:
     type: string
-    description: "Parent execution of the failing action"
+    description: "Parent execution of the failing task"
     required: true

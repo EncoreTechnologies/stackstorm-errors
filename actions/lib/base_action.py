@@ -17,6 +17,7 @@ import socket
 from st2common.runners.base_action import Action
 from st2client.client import Client
 
+
 class BaseAction(Action):
 
     def __init__(self, config):
@@ -34,3 +35,6 @@ class BaseAction(Action):
         vm_execution = self.st2_client.executions.get_by_id(st2_exe_id)
 
         return vm_execution
+
+    def run(self, **kwargs):
+        raise RuntimeError("run() not implemented")

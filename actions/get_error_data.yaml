@@ -1,0 +1,12 @@
+---
+description: "Retrieves the resulting error and execution tree of an execution"
+enabled: true
+runner_type: orquesta
+entry_point: workflows/get_error_data.yaml
+name: get_error_data
+pack: errors
+parameters:
+  st2_exe_id:
+    type: string
+    description: "Execution ID of the failing execution"
+    required: true

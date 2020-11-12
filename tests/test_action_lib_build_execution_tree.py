@@ -67,19 +67,14 @@ class TestBuildExecutionTree(ErrorsBaseActionTestCase):
         mock_execution = mock.Mock(action={'ref': 'test_ref'}, status='succeeded')
         mock_st2_client_initialize.return_value = mock_execution
 
-        mock_get_execution_tree.return_value = [
-            {
-                'status': "succeeded",
-                'name': "<pre><code>   +> vsphere_check</pre></code>"
-            }
-        ]
-
         expected_return = [
             {
                 'status': "succeeded",
                 'name': "<pre><code>   +> vsphere_check</pre></code>"
             }
         ]
+
+        mock_get_execution_tree.return_value = expected_return
 
         result = action.run(**kwargs_dict)
         self.assertEqual(result, expected_return)

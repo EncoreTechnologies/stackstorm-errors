@@ -50,7 +50,6 @@ class GetFormattedError(BaseAction):
                     self.child_error.append(execution)  # pylint: disable=no-member
 
     def format_error(self, st2_exe_id, cmdb_request_item_url, cmdb_request_item):
-        err_string = "ST2 Execution ID - {0}<br>".format(st2_exe_id)
         if cmdb_request_item_url:
             dev_section += ("ServiceNow Request: <a href={0}>{1}</a><br>"
                             "".format(cmdb_request_item_url, cmdb_request_item))

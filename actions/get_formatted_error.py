@@ -49,8 +49,12 @@ class GetFormattedError(BaseAction):
                 else:
                     self.child_error.append(execution)  # pylint: disable=no-member
 
-    def format_error(self, st2_exe_id):
+    def format_error(self, st2_exe_id, cmdb_request_item_url, cmdb_request_item):
         err_string = "ST2 Execution ID - {0}<br>".format(st2_exe_id)
+        if cmdb_request_item_url:
+            dev_section += ("ServiceNow Request: <a href={0}>{1}</a><br>"
+                            "".format(cmdb_request_item_url, cmdb_request_item))
+
         if self.child_error:  # pylint: disable=no-member
             for error in self.child_error:  # pylint: disable=no-member
                 err_message = self.format_error_strings(self.get_error_message(error.result))
@@ -122,6 +126,8 @@ class GetFormattedError(BaseAction):
     def run(self, **kwargs):
 
         st2_exe_id = kwargs['st2_exe_id']
+        cmdb_request_item_url = kwargs['cmdb_request_item_url']
+        cmdb_request_item = kwargs['cmdb_request_item']
 
         parent_execution = self.st2_client_initialize(st2_exe_id)
 
@@ -129,4 +135,4 @@ class GetFormattedError(BaseAction):
 
         self.find_error_execution(parent_execution)
 
-        return self.format_error(st2_exe_id)
+        return self.format_error(st2_exe_id, cmdb_request_item_url, cmdb_request_item)

@@ -5,6 +5,14 @@ runner_type: "python-script"
 entry_point: get_formatted_error.py
 name: get_formatted_error
 parameters:
+  cmdb_request_item:
+    type: string
+    description: "CMDB request item if the VM was requested through a CMDB"
+    required: false
+  cmdb_request_item_url:
+    type: string
+    description: "CMDB request item url if the VM was requested through a CMDB"
+    required: false
   st2_exe_id:
     type: string
     description: "Parent execution of the failing task"

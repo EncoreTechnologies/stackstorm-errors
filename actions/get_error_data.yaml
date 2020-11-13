@@ -6,6 +6,14 @@ entry_point: workflows/get_error_data.yaml
 name: get_error_data
 pack: errors
 parameters:
+  cmdb_request_item:
+    type: string
+    description: "CMDB request item if the VM was requested through a CMDB"
+    required: false
+  cmdb_request_item_url:
+    type: string
+    description: "CMDB request item url if the VM was requested through a CMDB"
+    required: false
   st2_exe_id:
     type: string
     description: "Execution ID of the failing execution"

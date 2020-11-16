@@ -4,28 +4,68 @@ version: 1.0
 description: Gets the execution tree and the resulting error of a given execution
 
 input:
+  - cmdb_request_item
+  - cmdb_request_item_url
+  - retire
   - st2_exe_id
+  - sn_update
 
 vars:
   - execution_tree: []
-  - execution_error: ""
+  - email_execution_error: ""
+  - sn_execution_error: ""
   - workflow_error: ""
 
 output:
+  - email_execution_error: "{{ ctx().email_execution_error }}"
   - execution_tree: "{{ ctx().execution_tree }}"
-  - execution_error: "{{ ctx().execution_error }}"
+  - sn_execution_error: "{{ ctx().sn_execution_error }}"
   - workflow_error: "{{ ctx().workflow_error }}"
 
 
 tasks:
-  get_error:
+  error_dispatch:
+    action: core.noop
+    next:
+      - when: "{{ succeeded() and ctx().retire and ctx().sn_update }}"
+        do:
+          - get_sn_error
+      - when: "{{ succeeded() and ctx().retire and not ctx().sn_update}}"
+        do:
+          - get_execution_tree
+      - when: "{{ succeeded() and not ctx().retire }}"
+        do:
+          - get_email_error
+
+  get_email_error:
     action: errors.get_formatted_error
     input:
+      sn_update: false
+      cmdb_request_item: "{{ ctx().cmdb_request_item }}"
+      cmdb_request_item_url: "{{ ctx().cmdb_request_item_url }}"
+      sn_update: "{{ ctx().sn_update }}"
       st2_exe_id: "{{ ctx().st2_exe_id }}"
     next:
       - when: "{{ succeeded() and result().result != '' }}"
         publish:
-          - execution_error: "{{ result().result }}"
+          - email_execution_error: "{{ result().result }}"
+        do:
+          - get_sn_error
+      - when: "{{ failed() }}"
+        publish:
+          - workflow_error: "execution with id={{ ctx().st2_exe_id }} does not have any errors"
+        do:
+          - get_sn_error
+
+  get_sn_error:
+    action: errors.get_formatted_error
+    input:
+      sn_update: true
+      st2_exe_id: "{{ ctx().st2_exe_id }}"
+    next:
+      - when: "{{ succeeded() and result().result != '' }}"
+        publish:
+          - sn_execution_error: "{{ result().result }}"
         do:
           - get_execution_tree
       - when: "{{ failed() }}"

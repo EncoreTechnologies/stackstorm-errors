@@ -13,6 +13,11 @@ parameters:
     type: string
     description: "CMDB request item url if the VM was requested through a CMDB"
     required: false
+  sn_update:
+    type: boolean
+    description: "Whether or not the ServiceNow the error needs to be formatted for SN"
+    required: true
+    default: false
   st2_exe_id:
     type: string
     description: "Parent execution of the failing task"

@@ -49,9 +49,10 @@ class GetFormattedError(BaseAction):
                 else:
                     self.child_error.append(execution)  # pylint: disable=no-member
 
-    def format_error(self, st2_exe_id, cmdb_request_item_url, cmdb_request_item):
+    def format_error(self, cmdb_request_item_url, cmdb_request_item):
+        err_string = ""
         if cmdb_request_item_url:
-            dev_section += ("ServiceNow Request: <a href={0}>{1}</a><br>"
+            err_string += ("ServiceNow Request: <a href={0}>{1}</a><br>"
                             "".format(cmdb_request_item_url, cmdb_request_item))
 
         if self.child_error:  # pylint: disable=no-member
@@ -69,6 +70,24 @@ class GetFormattedError(BaseAction):
                            "<br>".format(self.parent_error.context['orquesta']['task_name'],
                                          self.parent_error.id,
                                          err_message))
+
+        return err_string
+
+    def format_error_escaped_returns(self):
+        err_string = ""
+        if self.child_error:
+            for error in self.child_error:
+                err_message = self.get_error_message(error.result)
+                err_string += ("Error task: {0}\nError execution ID: {1}\nError message: {2}"
+                               "\n".format(error.context['orquesta']['task_name'],
+                                           error.id,
+                                           err_message))
+        else:
+            parent_error = self.get_error_message(self.parent_error.result)
+            err_string += ("Error task: {0}\nError execution ID: {1}\nError message: {2}"
+                           "\n".format(self.parent_error.context['orquesta']['task_name'],
+                                       self.parent_error.id,
+                                       parent_error))
 
         return err_string
 
@@ -127,6 +146,7 @@ class GetFormattedError(BaseAction):
         st2_exe_id = kwargs['st2_exe_id']
         cmdb_request_item_url = kwargs['cmdb_request_item_url']
         cmdb_request_item = kwargs['cmdb_request_item']
+        sn_update = kwargs['sn_update']
 
         parent_execution = self.st2_client_initialize(st2_exe_id)
 
@@ -134,4 +154,7 @@ class GetFormattedError(BaseAction):
 
         self.find_error_execution(parent_execution)
 
-        return self.format_error(st2_exe_id, cmdb_request_item_url, cmdb_request_item)
+        if sn_update:
+            return self.format_error_escaped_returns()
+        else:
+            return self.format_error(cmdb_request_item_url, cmdb_request_item)

@@ -6,23 +6,15 @@ entry_point: workflows/get_error_data.yaml
 name: get_error_data
 pack: errors
 parameters:
-  cmdb_request_item:
-    type: string
-    description: "CMDB request item if the VM was requested through a CMDB"
+  ignored_error_tasks:
+    type: array
+    description: "List of tasks to be ingnored when checking for errors"
     required: false
-  cmdb_request_item_url:
-    type: string
-    description: "CMDB request item url if the VM was requested through a CMDB"
-    required: false
-  retire:
+  html_tags:
     type: boolean
     description: "True if the error is during retirement"
     required: true
     default: false
-  sn_update:
-    type: boolean
-    description: "Whether the ServiceNow update needs to be updated or not"
-    required: false
   st2_exe_id:
     type: string
     description: "Execution ID of the failing execution"

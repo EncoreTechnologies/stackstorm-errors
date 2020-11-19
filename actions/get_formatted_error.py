@@ -32,62 +32,56 @@ class GetFormattedError(BaseAction):
         :returns: a new BaseAction
         """
         super(GetFormattedError, self).__init__(config)
+        self.child_error = []
 
-    def find_error_execution(self, parent_execution):
+    def find_error_execution(self, parent_execution, ignored_error_tasks):
         if hasattr(parent_execution, 'children'):
             for m in parent_execution.children:
-                self.find_error_execution(m)
+                self.find_error_execution(m, ignored_error_tasks)
         else:
-            st2_executions = self.st2_client.executions  # pylint: disable=no-member
+            st2_executions = self.st2_client.executions
             execution = st2_executions.get_by_id(parent_execution)
             if (execution.status == "failed" and
-               execution.context['orquesta']['task_name'] not in IGNORED_ERROR_TASKS):
-                self.parent_error = execution  # pylint: disable=no-member
+               execution.context['orquesta']['task_name'] not in ignored_error_tasks):
+                self.parent_error = execution
                 if hasattr(execution, 'children'):
                     for c in execution.children:
-                        self.find_error_execution(c)
+                        self.find_error_execution(c, ignored_error_tasks)
                 else:
-                    self.child_error.append(execution)  # pylint: disable=no-member
+                    self.child_error.append(execution)
 
-    def format_error(self, cmdb_request_item_url, cmdb_request_item):
+    def format_error(self, html_tags):
         err_string = ""
-        if cmdb_request_item_url:
-            err_string += ("ServiceNow Request: <a href={0}>{1}</a><br>"
-                            "".format(cmdb_request_item_url, cmdb_request_item))
 
-        if self.child_error:  # pylint: disable=no-member
-            for error in self.child_error:  # pylint: disable=no-member
-                err_message = self.format_error_strings(self.get_error_message(error.result))
-                err_string += ("Error task: {0}<br>Error execution ID: {1}<br>Error message: {2}"
-                               "<br>".format(error.context['orquesta']['task_name'],
-                                             error.id,
-                                             err_message))
-        else:
-            error_result = self.parent_error.result  # pylint: disable=no-member
-            parent_error = self.get_error_message(error_result)
-            err_message = self.format_error_strings(parent_error)
-            err_string += ("Error task: {0}<br>Error execution ID: {1}<br>Error message: {2}"
-                           "<br>".format(self.parent_error.context['orquesta']['task_name'],
-                                         self.parent_error.id,
-                                         err_message))
-
-        return err_string
-
-    def format_error_escaped_returns(self):
-        err_string = ""
         if self.child_error:
             for error in self.child_error:
-                err_message = self.get_error_message(error.result)
-                err_string += ("Error task: {0}\nError execution ID: {1}\nError message: {2}"
-                               "\n".format(error.context['orquesta']['task_name'],
-                                           error.id,
-                                           err_message))
+                if html_tags:
+                    err_message = self.format_error_strings(self.get_error_message(error.result))
+                    err_string += ("Error task: {0}<br>Error execution ID: {1}<br>Error message: {2}"
+                                   "<br>".format(error.context['orquesta']['task_name'],
+                                                 error.id,
+                                                 err_message))
+                else:
+                    err_message = self.get_error_message(error.result)
+                    err_string += ("Error task: {0}\nError execution ID: {1}\nError message: {2}"
+                                   "\n".format(error.context['orquesta']['task_name'],
+                                               error.id,
+                                               err_message))
         else:
-            parent_error = self.get_error_message(self.parent_error.result)
-            err_string += ("Error task: {0}\nError execution ID: {1}\nError message: {2}"
-                           "\n".format(self.parent_error.context['orquesta']['task_name'],
-                                       self.parent_error.id,
-                                       parent_error))
+            if html_tags:
+                error_result = self.parent_error.result
+                parent_error = self.get_error_message(error_result)
+                err_message = self.format_error_strings(parent_error)
+                err_string += ("Error task: {0}<br>Error execution ID: {1}<br>Error message: {2}"
+                               "<br>".format(self.parent_error.context['orquesta']['task_name'],
+                                             self.parent_error.id,
+                                             err_message))
+            else:
+                parent_error = self.get_error_message(self.parent_error.result)
+                err_string += ("Error task: {0}\nError execution ID: {1}\nError message: {2}"
+                               "\n".format(self.parent_error.context['orquesta']['task_name'],
+                                           self.parent_error.id,
+                                           parent_error))
 
         return err_string
 
@@ -135,7 +129,8 @@ class GetFormattedError(BaseAction):
             if 'stderr' in error_result['result']:
                 return error_result['result']['stderr']
 
-        # python actions ex. (vsphere pack)
+        # python actions
+        # ex. (vsphere pack https://github.com/StackStorm-Exchange/stackstorm-vsphere)
         if 'stderr' in error_result:
             return error_result['stderr']
 
@@ -144,17 +139,11 @@ class GetFormattedError(BaseAction):
     def run(self, **kwargs):
 
         st2_exe_id = kwargs['st2_exe_id']
-        cmdb_request_item_url = kwargs['cmdb_request_item_url']
-        cmdb_request_item = kwargs['cmdb_request_item']
-        sn_update = kwargs['sn_update']
+        html_tags = kwargs['html_tags']
+        ignored_error_tasks = kwargs['ignored_error_tasks']
 
         parent_execution = self.st2_client_initialize(st2_exe_id)
 
-        self.child_error = []
+        self.find_error_execution(parent_execution, ignored_error_tasks)
 
-        self.find_error_execution(parent_execution)
-
-        if sn_update:
-            return self.format_error_escaped_returns()
-        else:
-            return self.format_error(cmdb_request_item_url, cmdb_request_item)
+        return self.format_error(html_tags)

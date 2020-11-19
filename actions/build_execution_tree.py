@@ -46,9 +46,7 @@ class BuildExecutionTree(BaseAction):
 
         return self.task_list
 
-    def run(self, **kwargs):
-
-        st2_exe_id = kwargs['st2_exe_id']
+    def run(self, st2_exe_id):
 
         parent_execution = self.st2_client_initialize(st2_exe_id)
         self.task_list = []

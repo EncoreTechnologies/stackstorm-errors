@@ -5,17 +5,13 @@ runner_type: "python-script"
 entry_point: get_formatted_error.py
 name: get_formatted_error
 parameters:
-  cmdb_request_item:
-    type: string
-    description: "CMDB request item if the VM was requested through a CMDB"
+  ignored_error_tasks:
+    type: array
+    description: "List of tasks to be ingnored when checking for errors"
     required: false
-  cmdb_request_item_url:
-    type: string
-    description: "CMDB request item url if the VM was requested through a CMDB"
-    required: false
-  sn_update:
+  html_tags:
     type: boolean
-    description: "Whether or not the ServiceNow the error needs to be formatted for SN"
+    description: "Whether or not to format the error with HTML tags or new lines"
     required: true
     default: false
   st2_exe_id:

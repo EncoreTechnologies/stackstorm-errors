@@ -87,7 +87,6 @@ class GetFormattedError(BaseAction):
             return ("Error task: {0}\nError execution ID: {1}\nError message: {2}"
                     "\n".format(err_context, err_id, err_message))
 
-
     def format_error_strings(self, error_string):
         """ formats error strings by dropping extra string escapes
         and drops the ansi escapes. Then we convert the new lines into

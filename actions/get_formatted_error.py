@@ -57,33 +57,36 @@ class GetFormattedError(BaseAction):
             for error in self.child_error:
                 if html_tags:
                     err_message = self.format_error_strings(self.get_error_message(error.result))
-                    err_string += ("Error task: {0}<br>Error execution ID: {1}<br>Error message: {2}"
-                                   "<br>".format(error.context['orquesta']['task_name'],
-                                                 error.id,
-                                                 err_message))
                 else:
                     err_message = self.get_error_message(error.result)
-                    err_string += ("Error task: {0}\nError execution ID: {1}\nError message: {2}"
-                                   "\n".format(error.context['orquesta']['task_name'],
-                                               error.id,
-                                               err_message))
+
+                err_string += self.get_error_string(html_tags,
+                                                    error.context['orquesta']['task_name'],
+                                                    error.id,
+                                                    err_message)
         else:
             if html_tags:
                 error_result = self.parent_error.result
                 parent_error = self.get_error_message(error_result)
                 err_message = self.format_error_strings(parent_error)
-                err_string += ("Error task: {0}<br>Error execution ID: {1}<br>Error message: {2}"
-                               "<br>".format(self.parent_error.context['orquesta']['task_name'],
-                                             self.parent_error.id,
-                                             err_message))
             else:
                 parent_error = self.get_error_message(self.parent_error.result)
-                err_string += ("Error task: {0}\nError execution ID: {1}\nError message: {2}"
-                               "\n".format(self.parent_error.context['orquesta']['task_name'],
-                                           self.parent_error.id,
-                                           parent_error))
+
+            err_string += self.get_error_string(html_tags,
+                                                self.parent_error.context['orquesta']['task_name'],
+                                                self.parent_error.id,
+                                                err_message)
 
         return err_string
+
+    def get_error_string(self, html_tags, err_context, err_id, err_message):
+        if html_tags:
+            return ("Error task: {0}<br>Error execution ID: {1}<br>Error message: {2}"
+                    "<br>".format(err_context, err_id, err_message))
+        else:
+            return ("Error task: {0}\nError execution ID: {1}\nError message: {2}"
+                    "\n".format(err_context, err_id, err_message))
+
 
     def format_error_strings(self, error_string):
         """ formats error strings by dropping extra string escapes

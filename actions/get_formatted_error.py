@@ -69,13 +69,19 @@ class GetFormattedError(BaseAction):
                 error_result = self.parent_error.result
                 parent_error = self.get_error_message(error_result)
                 err_message = self.format_error_strings(parent_error)
+                err_string += self.get_error_string(html_tags,
+                                                    self.parent_error
+                                                    .context['orquesta']['task_name'],
+                                                    self.parent_error.id,
+                                                    err_message)
             else:
                 parent_error = self.get_error_message(self.parent_error.result)
 
-            err_string += self.get_error_string(html_tags,
-                                                self.parent_error.context['orquesta']['task_name'],
-                                                self.parent_error.id,
-                                                err_message)
+                err_string += self.get_error_string(html_tags,
+                                                    self.parent_error
+                                                    .context['orquesta']['task_name'],
+                                                    self.parent_error.id,
+                                                    parent_error)
 
         return err_string
 

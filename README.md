@@ -5,7 +5,9 @@
 # Introduction
 This pack contains all actions and workflows needed for finding and formating
 StackStorm errors. The errors and execution tree are obtained by using
-the st2 api (python module)
+the st2 api (python module). Workflows with their own custom errors are found
+first and if there are none we just return the errors from the child-most
+execution
 
 # Quick Start
 

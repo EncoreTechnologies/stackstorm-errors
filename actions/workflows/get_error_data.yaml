@@ -1,0 +1,48 @@
+---
+version: 1.0
+
+description: Gets the execution tree and the resulting error of a given execution
+
+input:
+  - ignored_error_tasks
+  - html_tags
+  - st2_exe_id
+
+vars:
+  - execution_error: ""
+  - execution_tree: []
+  - workflow_error: ""
+
+output:
+  - execution_error: "{{ ctx().execution_error }}"
+  - execution_tree: "{{ ctx().execution_tree }}"
+  - workflow_error: "{{ ctx().workflow_error }}"
+
+
+tasks:
+  get_error:
+    action: errors.get_formatted_error
+    input:
+      ignored_error_tasks: "{{ ctx().ignored_error_tasks }}"
+      html_tags: "{{ ctx().html_tags }}"
+      st2_exe_id: "{{ ctx().st2_exe_id }}"
+    next:
+      - when: "{{ succeeded() and result().result != '' }}"
+        publish:
+          - execution_error: "{{ result().result }}"
+        do:
+          - get_execution_tree
+      - when: "{{ failed() }}"
+        publish:
+          - workflow_error: "execution with id={{ ctx().st2_exe_id }} does not have any errors"
+        do:
+          - get_execution_tree
+
+  get_execution_tree:
+    action: errors.build_execution_tree
+    input:
+      st2_exe_id: "{{ ctx().st2_exe_id }}"
+    next:
+      - when: "{{ succeeded() }}"
+        publish:
+          - execution_tree: "{{ result().result }}"

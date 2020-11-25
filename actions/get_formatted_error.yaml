@@ -1,0 +1,20 @@
+---
+description: "Finds an error in the given task and formats the result into an HTML tagged output"
+enabled: true
+runner_type: "python-script"
+entry_point: get_formatted_error.py
+name: get_formatted_error
+parameters:
+  ignored_error_tasks:
+    type: array
+    description: "List of tasks to be ingnored when checking for errors"
+    required: false
+  html_tags:
+    type: boolean
+    description: "Whether or not to format the error with HTML tags or new lines"
+    required: true
+    default: false
+  st2_exe_id:
+    type: string
+    description: "Parent execution of the failing task"
+    required: true

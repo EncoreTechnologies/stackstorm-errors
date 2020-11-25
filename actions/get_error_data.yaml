@@ -1,0 +1,21 @@
+---
+description: "Retrieves the resulting error and execution tree of an execution"
+enabled: true
+runner_type: orquesta
+entry_point: workflows/get_error_data.yaml
+name: get_error_data
+pack: errors
+parameters:
+  ignored_error_tasks:
+    type: array
+    description: "List of tasks to be ingnored when checking for errors"
+    required: false
+  html_tags:
+    type: boolean
+    description: "True if the error is during retirement"
+    required: true
+    default: false
+  st2_exe_id:
+    type: string
+    description: "Execution ID of the failing execution"
+    required: true

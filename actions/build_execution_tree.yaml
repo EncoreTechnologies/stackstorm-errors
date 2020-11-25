@@ -1,0 +1,11 @@
+---
+description: "Builds an execution tree of the given task"
+enabled: true
+runner_type: "python-script"
+entry_point: build_execution_tree.py
+name: build_execution_tree
+parameters:
+  st2_exe_id:
+    type: string
+    description: "Execution ID of the failing workflow"
+    required: true

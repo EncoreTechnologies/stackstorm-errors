@@ -18,12 +18,6 @@ from six import string_types
 from lib.base_action import BaseAction
 
 
-IGNORED_ERROR_TASKS = [
-    'send_error_email',
-    'provision_cleanup_exec'
-]
-
-
 class GetFormattedError(BaseAction):
 
     def __init__(self, config):
@@ -33,6 +27,8 @@ class GetFormattedError(BaseAction):
         """
         super(GetFormattedError, self).__init__(config)
         self.child_error = []
+        self.parent_output = []
+        self.errors_as_string = ""
 
     def find_error_execution(self, parent_execution, ignored_error_tasks):
         if hasattr(parent_execution, 'children'):
@@ -43,6 +39,17 @@ class GetFormattedError(BaseAction):
             execution = st2_executions.get_by_id(parent_execution)
             if (execution.status == "failed" and
                execution.context['orquesta']['task_name'] not in ignored_error_tasks):
+                execution_result = execution.result
+                if execution_result['output']:
+                    if execution_result['output']['errors']:
+                        self.parent_error = execution
+                        parent_errors = execution_result['output']['errors']
+                        for error in parent_errors:
+                            for errors in error:
+                                self.parent_output.append(error['error'])
+                        self.errors_as_string = '\n'.join(self.parent_output)
+                        return None
+
                 self.parent_error = execution
                 if hasattr(execution, 'children'):
                     for c in execution.children:
@@ -67,7 +74,10 @@ class GetFormattedError(BaseAction):
         else:
             if html_tags:
                 error_result = self.parent_error.result
-                parent_error = self.get_error_message(error_result)
+                if self.errors_as_string:
+                    parent_error = self.errors_as_string
+                else:
+                    parent_error = self.get_error_message(error_result)
                 err_message = self.format_error_strings(parent_error)
                 err_string += self.get_error_string(html_tags,
                                                     self.parent_error
@@ -75,7 +85,10 @@ class GetFormattedError(BaseAction):
                                                     self.parent_error.id,
                                                     err_message)
             else:
-                parent_error = self.get_error_message(self.parent_error.result)
+                if self.errors_as_string:
+                    parent_error = self.errors_as_string
+                else:
+                    parent_error = self.get_error_message(self.parent_error.result)
 
                 err_string += self.get_error_string(html_tags,
                                                     self.parent_error

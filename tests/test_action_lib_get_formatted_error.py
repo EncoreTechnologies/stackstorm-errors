@@ -43,8 +43,16 @@ class TestGetFormattedError(ErrorsBaseActionTestCase):
                 'task_name': 'vsphere_check'
             }
         }
+        mock_execution_results = {
+            'output': {
+                'errors': ''
+            }
+        }
         test_ignored_tasks = []
-        test_execution = mock.Mock(children=[], context=mock_context, status='failed')
+        test_execution = mock.Mock(children=[],
+                                   context=mock_context,
+                                   status='failed',
+                                   result=mock_execution_results)
         mock_client = mock.Mock()
         mock_client.executions.get_by_id.return_value = test_execution
         action.st2_client = mock_client

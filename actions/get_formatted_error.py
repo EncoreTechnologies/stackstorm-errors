@@ -40,8 +40,8 @@ class GetFormattedError(BaseAction):
             if (execution.status == "failed" and
                execution.context['orquesta']['task_name'] not in ignored_error_tasks):
                 execution_result = execution.result
-                if execution_result['output']:
-                    if execution_result['output']['errors']:
+                if 'output' in execution_result and execution_result['output']:
+                    if 'errors' in execution_result['output']:
                         self.parent_error = execution
                         parent_errors = execution_result['output']['errors']
                         for error in parent_errors:

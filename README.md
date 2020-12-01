@@ -98,7 +98,7 @@ get_error:
 Example output (HTML):
 
 ```
-Error task: external_systems_check_fqdn<br>Error execution ID: 5fb5746e295becef56bf2195<br>Error message: VM with the name=bradltest1920.dev.encore.tech already exists in vSphere<br>
+Error task: external_systems_check_fqdn<br>Error execution ID: 5fb5746e295becef56bf2195<br>Error message: VM with the name=test.example.com already exists in vSphere<br>
 ```
 
 Example output (hard returns):
@@ -106,5 +106,32 @@ Example output (hard returns):
 ```
 Error task: external_systems_check_fqdn
 Error execution ID: 5fb5746e295becef56bf2195
-Error message: VM with the name=bradltest1920.dev.encore.tech already exists in vSphere
+Error message: VM with the name=test.example.com already exists in vSphere
 ```
+
+Custom Error Messages:
+
+Workflows with their own custom errors, in StackStorm's output, are found
+first and if there are none we just return the errors from the child-most
+execution
+
+Example:
+(https://github.com/StackStorm-Exchange/stackstorm-menandmice/blob/master/actions/workflows/test_hostname.yaml)
+
+```python
+parent_errors = execution_result['output']['error']
+```
+
+Example output (hard returns):
+
+```
+result:
+    Error task: external_systems_check
+    Error execution ID: 5fbc1d8db05eda3452d85013
+    Error message: VM still exists in vsphere with name=test.example.com
+    Hostname=test is already in use in menandmice
+    VM still exists in puppet with name=test.example.com
+```
+
+
+

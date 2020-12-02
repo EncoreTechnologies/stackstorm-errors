@@ -51,14 +51,15 @@ class GetFormattedError(BaseAction):
 
     def check_custom_errors(self, execution_result, execution):
         if 'output' in execution_result and execution_result['output']:
-            if execution_result.get('output', {}).get('errors'):
+            if execution_result.get('output', {}).get('error'):
                 self.parent_error = execution
-                parent_errors = execution_result['output']['errors']
+                parent_errors = execution_result['output']['error']
                 for error in parent_errors:
                     for errors in error:
                         self.parent_output.append(error['error'])
                 self.errors_as_string = '\n'.join(self.parent_output)
                 return True
+        return False
 
     def format_error(self, html_tags):
         err_string = ""

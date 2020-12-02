@@ -83,6 +83,30 @@ class TestGetFormattedError(ErrorsBaseActionTestCase):
         self.assertEqual(action.parent_error, test_execution)
         self.assertEqual(action.child_error, [])
 
+    def check_custom_errors_true(self):
+        action = self.get_action_instance({})
+        test_execution_result = {
+            'output': {
+                'errors': 'test_error'
+            }
+        }
+        test_execution = 'test_execution'
+        expected_return = True
+        result = action.check_custom_errors(test_execution_result, test_execution)
+        self.assertEqual(result, expected_return)
+
+    def check_custom_errors_false(self):
+        action = self.get_action_instance({})
+        test_execution_result = {
+            'output': {
+                'test_key': 'test_value'
+            }
+        }
+        test_execution = 'test_execution'
+        expected_return = False
+        result = action.check_custom_errors(test_execution_result, test_execution)
+        self.assertEqual(result, expected_return)
+
     def test_find_error_execution_ignored_cleanup(self):
         action = self.get_action_instance({})
         action.child_error = []

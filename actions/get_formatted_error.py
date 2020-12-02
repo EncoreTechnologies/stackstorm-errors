@@ -40,22 +40,26 @@ class GetFormattedError(BaseAction):
             if (execution.status == "failed" and
                execution.context['orquesta']['task_name'] not in ignored_error_tasks):
                 execution_result = execution.result
-                if execution_result['output']:
-                    if execution_result['output']['errors']:
-                        self.parent_error = execution
-                        parent_errors = execution_result['output']['errors']
-                        for error in parent_errors:
-                            for errors in error:
-                                self.parent_output.append(error['error'])
-                        self.errors_as_string = '\n'.join(self.parent_output)
-                        return None
-
+                if self.check_custom_errors(execution_result, execution):
+                    return None
                 self.parent_error = execution
                 if hasattr(execution, 'children'):
                     for c in execution.children:
                         self.find_error_execution(c, ignored_error_tasks)
                 else:
                     self.child_error.append(execution)
+
+    def check_custom_errors(self, execution_result, execution):
+        if 'output' in execution_result and execution_result['output']:
+            if execution_result.get('output', {}).get('error'):
+                self.parent_error = execution
+                parent_errors = execution_result['output']['error']
+                for error in parent_errors:
+                    for errors in error:
+                        self.parent_output.append(error['error'])
+                self.errors_as_string = '\n'.join(self.parent_output)
+                return True
+        return False
 
     def format_error(self, html_tags):
         err_string = ""

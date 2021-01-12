@@ -54,12 +54,12 @@ class GetFormattedError(BaseAction):
             if execution_result.get('output', {}).get('error'):
                 self.parent_error = execution
                 parent_errors = execution_result['output']['error']
+                if isinstance(parent_errors, string_types):
+                    self.errors_as_string = parent_errors
+                    return True
                 for error in parent_errors:
-                    if isinstance(error, str):
-                        self.parent_output.append(error)
-                    else:
-                        for errors in error:
-                            self.parent_output.append(error['error'])
+                    for errors in error:
+                        self.parent_output.append(error['error'])
                 self.errors_as_string = '\n'.join(self.parent_output)
                 return True
         return False

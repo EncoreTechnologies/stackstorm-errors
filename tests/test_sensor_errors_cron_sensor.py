@@ -36,8 +36,8 @@ class ErrorsCronSensorTestCase(BaseSensorTestCase):
         self.assertIsInstance(sensor, ErrorsCronSensor)
         self.assertIsInstance(sensor, PollingSensor)
 
-    @mock.patch('sensors.errors_provision_sensor.Client')
-    @mock.patch('sensors.errors_provision_sensor.socket')
+    @mock.patch('errors_provision_sensor.Client')
+    @mock.patch('errors_provision_sensor.socket')
     def test_setup(self, mock_socket, mock_client):
         config = yaml.safe_load(self.get_fixture_content('config_good.yaml'))
         sensor = self.get_sensor_instance(config)
@@ -109,7 +109,7 @@ class ErrorsCronSensorTestCase(BaseSensorTestCase):
         }
 
         sensor.poll()
-        self.assertTriggerDispatched(trigger='errors.cron_trigger',
+        self.assertTriggerDispatched(trigger='errors.update_events',
                                      payload=trigger_payload)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'error without enforcement id'})
 
@@ -139,7 +139,7 @@ class ErrorsCronSensorTestCase(BaseSensorTestCase):
 
         result_value = sensor.check_enforcements(**test_dict)
         self.assertEqual(result_value, False)
-        self.assertTriggerDispatched(trigger='errors.cron_trigger',
+        self.assertTriggerDispatched(trigger='errors.update_events',
                                      payload=trigger_payload)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'error without enforcement id'})
 
@@ -174,7 +174,7 @@ class ErrorsCronSensorTestCase(BaseSensorTestCase):
 
         result_value = sensor.check_enforcements(**test_dict)
         self.assertEqual(result_value, False)
-        self.assertTriggerDispatched(trigger='errors.cron_trigger',
+        self.assertTriggerDispatched(trigger='errors.update_events',
                                      payload=trigger_payload)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'test_id'})
 
@@ -260,7 +260,7 @@ class ErrorsCronSensorTestCase(BaseSensorTestCase):
         result_value = sensor.check_enforcements(**test_dict)
         self.assertEqual(result_value, True)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'test_id'})
-        self.assertTriggerDispatched(trigger='errors.cron_trigger',
+        self.assertTriggerDispatched(trigger='errors.update_events',
                                      payload=trigger_payload)
 
     def test_check_enforcements_no_execution(self):
@@ -295,7 +295,7 @@ class ErrorsCronSensorTestCase(BaseSensorTestCase):
 
         result_value = sensor.check_enforcements(**test_dict)
         self.assertEqual(result_value, False)
-        self.assertTriggerDispatched(trigger='errors.cron_trigger',
+        self.assertTriggerDispatched(trigger='errors.update_events',
                                      payload=trigger_payload)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'test_id'})
 
@@ -332,7 +332,7 @@ class ErrorsCronSensorTestCase(BaseSensorTestCase):
 
         result_value = sensor.check_enforcements(**test_dict)
         self.assertEqual(result_value, False)
-        self.assertTriggerDispatched(trigger='errors.cron_trigger',
+        self.assertTriggerDispatched(trigger='errors.update_events',
                                      payload=trigger_payload)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'test_id'})
 
@@ -370,7 +370,7 @@ class ErrorsCronSensorTestCase(BaseSensorTestCase):
         }
 
         sensor.dispatch_trigger(**test_dict)
-        self.assertTriggerDispatched(trigger='errors.cron_trigger',
+        self.assertTriggerDispatched(trigger='errors.update_events',
                                      payload=test_dict)
 
     def test_check_before_dispatch_no_keys(self):

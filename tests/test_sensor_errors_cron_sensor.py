@@ -36,8 +36,8 @@ class ErrorsCronSensorTestCase(BaseSensorTestCase):
         self.assertIsInstance(sensor, ErrorsCronSensor)
         self.assertIsInstance(sensor, PollingSensor)
 
-    @mock.patch('errors_provision_sensor.Client')
-    @mock.patch('errors_provision_sensor.socket')
+    @mock.patch('errors_cron_sensor.Client')
+    @mock.patch('errors_cron_sensor.socket')
     def test_setup(self, mock_socket, mock_client):
         config = yaml.safe_load(self.get_fixture_content('config_good.yaml'))
         sensor = self.get_sensor_instance(config)

@@ -1,0 +1,15 @@
+---
+version: 1.0
+
+description: Tests the cron sensor
+
+tasks:
+  dispatch:
+    action: core.noop
+    next:
+      - when: "{{ succeeded() }}"
+        do:
+          - noop
+      - when: "{{ failed() }}"
+        do:
+          - fail

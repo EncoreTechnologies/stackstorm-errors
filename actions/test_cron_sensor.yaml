@@ -1,0 +1,7 @@
+---
+description: "Tests the cron sensor"
+enabled: true
+runner_type: orquesta
+entry_point: workflows/test_cron_sensor.yaml
+name: test_cron_sensor
+pack: errors

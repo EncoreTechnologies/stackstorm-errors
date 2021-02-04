@@ -14,7 +14,7 @@
 # limitations under the License.
 from st2tests.base import BaseSensorTestCase
 
-from sensors.errors_cron_sensor import ErrorsCronSensor
+from errors_cron_sensor import ErrorsCronSensor
 from st2reactor.sensor.base import PollingSensor
 import mock
 import datetime

@@ -1,6 +1,6 @@
 ---
-  class_name: "ErrorsCronSensor"
-  entry_point: "errors_cron_sensor.py"
+  class_name: "CronSensor"
+  entry_point: "cron_sensor.py"
   description: "Sensor to check to make sure our cron rules are running and succeeding"
   poll_interval: 300
   trigger_types:

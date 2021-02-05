@@ -14,7 +14,7 @@
 # limitations under the License.
 from st2tests.base import BaseSensorTestCase
 
-from errors_cron_sensor import ErrorsCronSensor
+from cron_sensor import CronSensor
 from st2reactor.sensor.base import PollingSensor
 import mock
 import datetime
@@ -23,21 +23,21 @@ import yaml
 from freezegun import freeze_time
 
 __all__ = [
-    'ErrorsCronSensorTestCase'
+    'CronSensorTestCase'
 ]
 
 
-class ErrorsCronSensorTestCase(BaseSensorTestCase):
+class CronSensorTestCase(BaseSensorTestCase):
     __test__ = True
-    sensor_cls = ErrorsCronSensor
+    sensor_cls = CronSensor
 
     def test_init(self):
         sensor = self.get_sensor_instance()
-        self.assertIsInstance(sensor, ErrorsCronSensor)
+        self.assertIsInstance(sensor, CronSensor)
         self.assertIsInstance(sensor, PollingSensor)
 
-    @mock.patch('errors_cron_sensor.Client')
-    @mock.patch('errors_cron_sensor.socket')
+    @mock.patch('cron_sensor.Client')
+    @mock.patch('cron_sensor.socket')
     def test_setup(self, mock_socket, mock_client):
         config = yaml.safe_load(self.get_fixture_content('config_good.yaml'))
         sensor = self.get_sensor_instance(config)

@@ -1,0 +1,16 @@
+---
+description: "Gets information about a given execution"
+enabled: true
+runner_type: "python-script"
+entry_point: execution_find_results.py
+name: execution_find_results
+pack: errors
+parameters:
+  provision_skip_list:
+    type: array
+    description: "List of tasks to be skipped when checking for errors"
+    required: true
+  st2_exe_id:
+    type: string
+    description: "Stackstorm execution id"
+    required: true

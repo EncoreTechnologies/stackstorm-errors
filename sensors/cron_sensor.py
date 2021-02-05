@@ -28,7 +28,7 @@ from dateutil.parser import parse  # pylint: disable=import-error
 import pytz  # pylint: disable=import-error
 
 __all__ = [
-    'ErrorsCronSensor'
+    'CronSensor'
 ]
 
 ERRORED_STATUSES = [
@@ -64,9 +64,9 @@ STACKSTORM_TO_CRONTAB_DAYS = {
 }
 
 
-class ErrorsCronSensor(PollingSensor):
+class CronSensor(PollingSensor):
     def __init__(self, sensor_service, config=None, poll_interval=None):
-        super(ErrorsCronSensor, self).__init__(sensor_service=sensor_service,
+        super(CronSensor, self).__init__(sensor_service=sensor_service,
                                                config=config,
                                                poll_interval=poll_interval)
         self._logger = self._sensor_service.get_logger(__name__)

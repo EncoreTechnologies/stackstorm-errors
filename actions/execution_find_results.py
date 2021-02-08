@@ -13,12 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import socket
 import six
 import st2client
 import st2client.commands.action
 import st2client.models
-from st2client.client import Client
 from lib.base_action import BaseAction
 
 
@@ -89,7 +87,7 @@ class ExecutionFindResults(BaseAction):
             execution_status['st2_execution_comments'] = self.format_error(html_tags=False)
         elif st2_status == 'unknown':
             execution_status['st2_execution_comments'] = ("Could not find execution_id "
-                                                        "in database")
+                                                          "in database")
 
         return execution_status
 

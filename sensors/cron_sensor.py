@@ -67,8 +67,8 @@ STACKSTORM_TO_CRONTAB_DAYS = {
 class CronSensor(PollingSensor):
     def __init__(self, sensor_service, config=None, poll_interval=None):
         super(CronSensor, self).__init__(sensor_service=sensor_service,
-                                               config=config,
-                                               poll_interval=poll_interval)
+                                         config=config,
+                                         poll_interval=poll_interval)
         self._logger = self._sensor_service.get_logger(__name__)
         self.trigger_ref = "errors.update_events"
 

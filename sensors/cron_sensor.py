@@ -70,14 +70,14 @@ class CronSensor(PollingSensor):
                                          config=config,
                                          poll_interval=poll_interval)
         self._logger = self._sensor_service.get_logger(__name__)
-        self.trigger_ref = "errors.update_events"
+        self.trigger_ref = "errors.error_cron_event"
 
     def setup(self):
         self.st2_fqdn = socket.getfqdn()
         st2_url = "https://{}/".format(self.st2_fqdn)
         self.st2_client = Client(base_url=st2_url)
 
-        self.kv_sensor_name = self._config['errors_cron_sensor']['datastore_key']
+        self.kv_sensor_name = self._config['error_cron_event']['datastore_key']
 
     def poll(self):
         # Get the current datetime with a timezone
@@ -150,17 +150,17 @@ class CronSensor(PollingSensor):
                         self._logger.info("Currently running execution. Will check next run")
                         return False
                     elif st2_execution.status in ERRORED_STATUSES:
-                        self.dispatch_trigger(enforcement.rule['ref'],
-                                              self.st2_fqdn,
-                                              enforcement.execution_id,
-                                              "Cronjob execution failed",
-                                              enforcement.id)
+                        self.dispatch_trigger(st2_rule_name=enforcement.rule['ref'],
+                                              st2_server=self.st2_fqdn,
+                                              st2_enforcement_exe_id=enforcement.execution_id,
+                                              st2_comments="Cronjob execution failed",
+                                              st2_enforcement_id=enforcement.id)
                         return False
                     else:
                         if enforcement.rule['ref'] in self.kv_enforcements:
                             self.dispatch_trigger(st2_rule_name=enforcement.rule['ref'],
                                                   st2_server=self.st2_fqdn,
-                                                  st2_execution_id=enforcement.execution_id,
+                                                  st2_enforcement_exe_id=enforcement.execution_id,
                                                   st2_comments="Cronjob ran successfully",
                                                   st2_enforcement_id=enforcement.id,
                                                   st2_state="closed")
@@ -193,14 +193,14 @@ class CronSensor(PollingSensor):
     def dispatch_trigger(self,
                          st2_rule_name,
                          st2_server,
-                         st2_execution_id="",
+                         st2_enforcement_exe_id="",
                          st2_comments="",
                          st2_enforcement_id=None,
                          st2_state="open"):
         trigger_payload = {
             'st2_rule_name': st2_rule_name,
             'st2_server': st2_server,
-            'st2_execution_id': st2_execution_id,
+            'st2_enforcement_exe_id': st2_enforcement_exe_id,
             'st2_comments': st2_comments,
             'st2_state': st2_state
         }

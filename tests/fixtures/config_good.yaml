@@ -1,2 +1,2 @@
-errors_cron_sensor:
+error_cron_event:
     datastore_key: test_key

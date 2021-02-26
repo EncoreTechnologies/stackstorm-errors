@@ -64,9 +64,8 @@ class ExecutionFindResults(BaseAction):
         :returns: a new BaseAction
         """
         super(ExecutionFindResults, self).__init__(config)
-        self.st2_exe_id = ""
 
-    def check_status(self, st2_execution):
+    def check_status(self, st2_execution, st2_exe_id, provision_skip_list):
 
         st2_status = 'unknown'
         for k, v in six.iteritems(STACKSTORM_STATUSES):
@@ -76,12 +75,12 @@ class ExecutionFindResults(BaseAction):
         # st2_execution_comments comments needs to be defaulted to an empty string
         # else there is a trigger error saying that the value does not exists.
         execution_status = {
-            'st2_execution_id': self.st2_exe_id,
+            'st2_execution_id': st2_exe_id,
             'st2_execution_status': st2_status,
             'st2_execution_comments': ""
         }
 
-        self.find_error_execution(st2_execution, self.provision_skip_list)
+        self.find_error_execution(st2_execution, provision_skip_list)
 
         if st2_status == 'failed':
             execution_status['st2_execution_comments'] = self.format_error(html_tags=False)
@@ -93,9 +92,9 @@ class ExecutionFindResults(BaseAction):
 
     def run(self, **kwargs):
 
-        self.provision_skip_list = kwargs['provision_skip_list']
-        self.st2_exe_id = kwargs['st2_exe_id']
+        provision_skip_list = kwargs['provision_skip_list']
+        st2_exe_id = kwargs['st2_exe_id']
 
-        st2_execution = self.st2_client_initialize(self.st2_exe_id)
+        st2_execution = self.st2_client_initialize(st2_exe_id)
 
-        return self.check_status(st2_execution)
+        return self.check_status(st2_execution, st2_exe_id, provision_skip_list)

@@ -70,7 +70,7 @@ class TestExecutionFindResults(ErrorsBaseActionTestCase):
                                            'key1': 'val1',
                                            'key2': 'val2'})
         mock_format_error.return_value = 'test_error'
-        result = action.check_status(mock_execution)
+        result = action.check_status(mock_execution, action.st2_exe_id, action.provision_skip_list)
         self.assertEqual(result, expected_result)
 
     @mock.patch("lib.base_action.BaseAction.st2_client_initialize")
@@ -109,7 +109,7 @@ class TestExecutionFindResults(ErrorsBaseActionTestCase):
                                            'key1': 'val1',
                                            'key2': 'val2'})
         mock_format_error.return_value = 'test_error'
-        result = action.check_status(mock_execution)
+        result = action.check_status(mock_execution, action.st2_exe_id, action.provision_skip_list)
         self.assertEqual(result, expected_result)
 
     @mock.patch("lib.base_action.BaseAction.st2_client_initialize")

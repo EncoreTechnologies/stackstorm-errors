@@ -5,8 +5,8 @@
   poll_interval: 300
   trigger_types:
     -
-      name: "update_events"
-      description: "Updates ServiceNow based on the information from StackStorm"
+      name: "error_cron_event"
+      description: "Fires trigger with updates based on the cron information from StackStorm"
       # payload_info:
       #   - "st2_rule_name"
       #   - "st2_server"

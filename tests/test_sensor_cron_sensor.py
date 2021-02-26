@@ -103,13 +103,13 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_execution_id': '',
+            'st2_enforcement_exe_id': '',
             'st2_comments': 'Cron job is not running and no enforcements can be found',
             'st2_state': 'open'
         }
 
         sensor.poll()
-        self.assertTriggerDispatched(trigger='errors.update_events',
+        self.assertTriggerDispatched(trigger='errors.error_cron_event',
                                      payload=trigger_payload)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'error without enforcement id'})
 
@@ -132,14 +132,14 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_execution_id': '',
+            'st2_enforcement_exe_id': '',
             'st2_comments': 'Cron job did not run',
             'st2_state': 'open'
         }
 
         result_value = sensor.check_enforcements(**test_dict)
         self.assertEqual(result_value, False)
-        self.assertTriggerDispatched(trigger='errors.update_events',
+        self.assertTriggerDispatched(trigger='errors.error_cron_event',
                                      payload=trigger_payload)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'error without enforcement id'})
 
@@ -167,14 +167,14 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_execution_id': 'test_execution',
+            'st2_enforcement_exe_id': 'test_execution',
             'st2_comments': 'Cronjob execution failed',
             'st2_state': 'open'
         }
 
         result_value = sensor.check_enforcements(**test_dict)
         self.assertEqual(result_value, False)
-        self.assertTriggerDispatched(trigger='errors.update_events',
+        self.assertTriggerDispatched(trigger='errors.error_cron_event',
                                      payload=trigger_payload)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'test_id'})
 
@@ -252,7 +252,7 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_execution_id': 'test_execution',
+            'st2_enforcement_exe_id': 'test_execution',
             'st2_comments': 'Cronjob ran successfully',
             'st2_state': 'closed'
         }
@@ -260,7 +260,7 @@ class CronSensorTestCase(BaseSensorTestCase):
         result_value = sensor.check_enforcements(**test_dict)
         self.assertEqual(result_value, True)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'test_id'})
-        self.assertTriggerDispatched(trigger='errors.update_events',
+        self.assertTriggerDispatched(trigger='errors.error_cron_event',
                                      payload=trigger_payload)
 
     def test_check_enforcements_no_execution(self):
@@ -288,14 +288,14 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_execution_id': '',
+            'st2_enforcement_exe_id': '',
             'st2_comments': 'test_failure',
             'st2_state': 'open'
         }
 
         result_value = sensor.check_enforcements(**test_dict)
         self.assertEqual(result_value, False)
-        self.assertTriggerDispatched(trigger='errors.update_events',
+        self.assertTriggerDispatched(trigger='errors.error_cron_event',
                                      payload=trigger_payload)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'test_id'})
 
@@ -325,14 +325,14 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_execution_id': '',
+            'st2_enforcement_exe_id': '',
             'st2_comments': '\{\{ test_failure \}\}',  # noqa: W605
             'st2_state': 'open'
         }
 
         result_value = sensor.check_enforcements(**test_dict)
         self.assertEqual(result_value, False)
-        self.assertTriggerDispatched(trigger='errors.update_events',
+        self.assertTriggerDispatched(trigger='errors.error_cron_event',
                                      payload=trigger_payload)
         self.assertEqual(sensor.kv_enforcements, {'test_rule': 'test_id'})
 
@@ -364,13 +364,13 @@ class CronSensorTestCase(BaseSensorTestCase):
         test_dict = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_execution_id': 'st2_test_execution',
+            'st2_enforcement_exe_id': 'st2_test_execution',
             'st2_comments': 'test_comments',
             'st2_state': 'open'
         }
 
         sensor.dispatch_trigger(**test_dict)
-        self.assertTriggerDispatched(trigger='errors.update_events',
+        self.assertTriggerDispatched(trigger='errors.error_cron_event',
                                      payload=test_dict)
 
     def test_check_before_dispatch_no_keys(self):

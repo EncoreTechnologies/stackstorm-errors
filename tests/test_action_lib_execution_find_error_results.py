@@ -14,23 +14,23 @@
 # limitations under the License.
 
 from errors_base_action_test_case import ErrorsBaseActionTestCase
-from execution_find_results import ExecutionFindResults
+from execution_find_error_results import ExecutionFindErrorResults
 from lib.base_action import BaseAction
 from st2common.runners.base_action import Action
 import mock
 
 __all__ = [
-    'TestExecutionFindResults'
+    'TestExecutionFindErrorResults'
 ]
 
 
-class TestExecutionFindResults(ErrorsBaseActionTestCase):
+class TestExecutionFindErrorResults(ErrorsBaseActionTestCase):
     __test__ = True
-    action_cls = ExecutionFindResults
+    action_cls = ExecutionFindErrorResults
 
     def test_init(self):
         action = self.get_action_instance({})
-        self.assertIsInstance(action, ExecutionFindResults)
+        self.assertIsInstance(action, ExecutionFindErrorResults)
         self.assertIsInstance(action, BaseAction)
         self.assertIsInstance(action, Action)
 

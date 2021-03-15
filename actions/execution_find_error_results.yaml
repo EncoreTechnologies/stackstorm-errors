@@ -2,8 +2,8 @@
 description: "Gets information about a given execution"
 enabled: true
 runner_type: "python-script"
-entry_point: execution_find_results.py
-name: execution_find_results
+entry_point: execution_find_error_results.py
+name: execution_find_error_results
 pack: errors
 parameters:
   provision_skip_list:

@@ -152,7 +152,7 @@ class CronSensor(PollingSensor):
                     elif st2_execution.status in ERRORED_STATUSES:
                         self.dispatch_trigger(st2_rule_name=enforcement.rule['ref'],
                                               st2_server=self.st2_fqdn,
-                                              st2_enforcement_exe_id=enforcement.execution_id,
+                                              st2_execution_id=enforcement.execution_id,
                                               st2_comments="Cronjob execution failed",
                                               st2_enforcement_id=enforcement.id)
                         return False
@@ -160,10 +160,10 @@ class CronSensor(PollingSensor):
                         if enforcement.rule['ref'] in self.kv_enforcements:
                             self.dispatch_trigger(st2_rule_name=enforcement.rule['ref'],
                                                   st2_server=self.st2_fqdn,
-                                                  st2_enforcement_exe_id=enforcement.execution_id,
+                                                  st2_execution_id=enforcement.execution_id,
                                                   st2_comments="Cronjob ran successfully",
                                                   st2_enforcement_id=enforcement.id,
-                                                  st2_state="closed")
+                                                  st2_state="success")
                         return True
                 else:
                     rule_enforcement = self.st2_client.ruleenforcements.get_by_id(enforcement.id)
@@ -193,18 +193,18 @@ class CronSensor(PollingSensor):
     def dispatch_trigger(self,
                          st2_rule_name,
                          st2_server,
-                         st2_enforcement_exe_id="",
+                         st2_execution_id="",
                          st2_comments="",
                          st2_enforcement_id=None,
-                         st2_state="open"):
+                         st2_state="error"):
         trigger_payload = {
             'st2_rule_name': st2_rule_name,
             'st2_server': st2_server,
-            'st2_enforcement_exe_id': st2_enforcement_exe_id,
+            'st2_execution_id': st2_execution_id,
             'st2_comments': st2_comments,
             'st2_state': st2_state
         }
-        if st2_state == "closed":
+        if st2_state == "success":
             self._sensor_service.dispatch(trigger=self.trigger_ref, payload=trigger_payload)
             return True
 

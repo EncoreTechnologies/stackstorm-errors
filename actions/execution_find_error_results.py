@@ -56,14 +56,14 @@ COMPLETED_STATUSES = [
 ]
 
 
-class ExecutionFindResults(BaseAction):
+class ExecutionFindErrorResults(BaseAction):
 
     def __init__(self, config):
         """Creates a new BaseAction given a StackStorm config object (kwargs works too)
         :param config: StackStorm configuration object for the pack
         :returns: a new BaseAction
         """
-        super(ExecutionFindResults, self).__init__(config)
+        super(ExecutionFindErrorResults, self).__init__(config)
 
     def check_status(self, st2_execution, st2_exe_id, provision_skip_list):
 

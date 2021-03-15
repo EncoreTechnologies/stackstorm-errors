@@ -103,9 +103,9 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_enforcement_exe_id': '',
+            'st2_execution_id': '',
             'st2_comments': 'Cron job is not running and no enforcements can be found',
-            'st2_state': 'open'
+            'st2_state': 'error'
         }
 
         sensor.poll()
@@ -132,9 +132,9 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_enforcement_exe_id': '',
+            'st2_execution_id': '',
             'st2_comments': 'Cron job did not run',
-            'st2_state': 'open'
+            'st2_state': 'error'
         }
 
         result_value = sensor.check_enforcements(**test_dict)
@@ -167,9 +167,9 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_enforcement_exe_id': 'test_execution',
+            'st2_execution_id': 'test_execution',
             'st2_comments': 'Cronjob execution failed',
-            'st2_state': 'open'
+            'st2_state': 'error'
         }
 
         result_value = sensor.check_enforcements(**test_dict)
@@ -252,9 +252,9 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_enforcement_exe_id': 'test_execution',
+            'st2_execution_id': 'test_execution',
             'st2_comments': 'Cronjob ran successfully',
-            'st2_state': 'closed'
+            'st2_state': 'success'
         }
 
         result_value = sensor.check_enforcements(**test_dict)
@@ -288,9 +288,9 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_enforcement_exe_id': '',
+            'st2_execution_id': '',
             'st2_comments': 'test_failure',
-            'st2_state': 'open'
+            'st2_state': 'error'
         }
 
         result_value = sensor.check_enforcements(**test_dict)
@@ -325,9 +325,9 @@ class CronSensorTestCase(BaseSensorTestCase):
         trigger_payload = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_enforcement_exe_id': '',
+            'st2_execution_id': '',
             'st2_comments': '\{\{ test_failure \}\}',  # noqa: W605
-            'st2_state': 'open'
+            'st2_state': 'error'
         }
 
         result_value = sensor.check_enforcements(**test_dict)
@@ -364,7 +364,7 @@ class CronSensorTestCase(BaseSensorTestCase):
         test_dict = {
             'st2_rule_name': 'test_rule',
             'st2_server': 'st2_test',
-            'st2_enforcement_exe_id': 'st2_test_execution',
+            'st2_execution_id': 'st2_test_execution',
             'st2_comments': 'test_comments',
             'st2_state': 'open'
         }

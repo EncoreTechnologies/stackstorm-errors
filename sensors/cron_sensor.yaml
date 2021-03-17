@@ -1,0 +1,34 @@
+---
+  class_name: "CronSensor"
+  entry_point: "cron_sensor.py"
+  description: "Sensor to check to make sure our cron rules are running and succeeding"
+  poll_interval: 300
+  trigger_types:
+    -
+      name: "error_cron_event"
+      description: "Fires trigger with updates based on the cron information from StackStorm"
+      # payload_info:
+      #   - "st2_rule_name"
+      #   - "st2_server"
+      #   - "st2_execution_id"
+      #   - "st2_last_ran"
+      #   - "st2_comments"
+      payload_schema:
+        type: "object"
+        properties:
+          st2_comments:
+            type: "string"
+            format: "Comments on what is happening with the cron job."
+          st2_execution_id:
+            type: "string"
+            format: "Stackstorm execution id"
+            default: ""
+          st2_rule_name:
+            type: "string"
+            format: "Stackstorm rule name"
+          st2_server:
+            type: "string"
+            format: "Stackstorm server with the Cron error"
+          st2_state:
+            type: "string"
+            format: "The state that the error event should be in"

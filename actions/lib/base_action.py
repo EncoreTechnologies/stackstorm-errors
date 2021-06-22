@@ -44,21 +44,25 @@ class BaseAction(Action):
     def find_error_execution(self, parent_execution, ignored_error_tasks):
         if hasattr(parent_execution, 'children'):
             for m in parent_execution.children:
-                self.find_error_execution(m, ignored_error_tasks)
+                self.find_error_execution(str(m), ignored_error_tasks)
         else:
-            st2_executions = self.st2_client.executions
-            execution = st2_executions.get_by_id(parent_execution)
-            if (execution.status == "failed" and
-               execution.context['orquesta']['task_name'] not in ignored_error_tasks):
-                execution_result = execution.result
-                if self.check_custom_errors(execution_result, execution):
-                    return None
-                self.parent_error = execution
-                if hasattr(execution, 'children'):
-                    for c in execution.children:
-                        self.find_error_execution(c, ignored_error_tasks)
+            execution = parent_execution
+            if isinstance(parent_execution, str):
+                st2_executions = self.st2_client.executions
+                execution = st2_executions.get_by_id(parent_execution)
+            if (str(execution.status) == "failed" or str(execution.status) == "timeout"):
+                if "orquesta" in execution.context and execution.context['orquesta']['task_name'] in ignored_error_tasks:
+                    pass
                 else:
-                    self.child_error.append(execution)
+                    execution_result = execution.result
+                    if self.check_custom_errors(execution_result, execution):
+                        return None
+                    self.parent_error = execution
+                    if hasattr(execution, 'children'):
+                        for c in execution.children:
+                            self.find_error_execution(c, ignored_error_tasks)
+                    else:
+                        self.child_error.append(execution)
 
     def check_custom_errors(self, execution_result, execution):
         if 'output' in execution_result and execution_result['output']:
@@ -85,10 +89,13 @@ class BaseAction(Action):
                 else:
                     err_message = self.get_error_message(error.result)
 
-                err_string += self.get_error_string(html_tags,
-                                                    error.context['orquesta']['task_name'],
-                                                    error.id,
-                                                    err_message)
+                if "orquesta" in error.context:
+                    err_string += self.get_error_string(html_tags,
+                                                        error.context['orquesta']['task_name'],
+                                                        error.id,
+                                                        err_message)
+                else:
+                    err_string += error.result['error']
         else:
             if html_tags:
                 error_result = self.parent_error.result

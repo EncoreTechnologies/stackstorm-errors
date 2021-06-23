@@ -124,7 +124,8 @@ class CronSensor(PollingSensor):
                 st2_comments = "Cron job is not running and no enforcements can be found"
                 self.dispatch_trigger(st2_rule_name=rule.ref,
                                       st2_server=self.st2_fqdn,
-                                      st2_comments=st2_comments)
+                                      st2_comments=st2_comments,
+                                      st2_state="open")
 
         self._sensor_service.set_value(name=self.kv_sensor_name, value=self.kv_enforcements)
 
@@ -187,7 +188,8 @@ class CronSensor(PollingSensor):
         # and cron jobs stopped running.
         self.dispatch_trigger(st2_rule_name=enforcements[0].rule['ref'],
                               st2_server=self.st2_fqdn,
-                              st2_comments="Cron job did not run")
+                              st2_comments="Cron job did not run",
+                              st2_state="open")
         return False
 
     def dispatch_trigger(self,

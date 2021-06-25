@@ -47,7 +47,7 @@ class BaseAction(Action):
                 self.find_error_execution(str(m), ignored_error_tasks)
         else:
             execution = parent_execution
-            if isinstance(parent_execution, str):
+            if isinstance(parent_execution, string_types):
                 st2_executions = self.st2_client.executions
                 execution = st2_executions.get_by_id(parent_execution)
             if (str(execution.status) == "failed" or str(execution.status) == "timeout"):

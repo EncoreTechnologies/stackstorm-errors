@@ -158,7 +158,8 @@ class BaseAction(Action):
 
         # Jinja syntax errors
         if 'errors' in error_result:
-            return error_result['errors'][0]['message']
+            error = error_result['errors'][0]['message']
+            return error.replace("{{", '').replace("}}", '')
 
         # Bolt plans (https://github.com/StackStorm-Exchange/stackstorm-bolt)
         if ('result' in error_result and

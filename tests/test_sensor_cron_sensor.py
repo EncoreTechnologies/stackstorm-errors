@@ -105,7 +105,7 @@ class CronSensorTestCase(BaseSensorTestCase):
             'st2_server': 'st2_test',
             'st2_execution_id': '',
             'st2_comments': 'Cron job is not running and no enforcements can be found',
-            'st2_state': 'error'
+            'st2_state': 'open'
         }
 
         sensor.poll()
@@ -134,7 +134,7 @@ class CronSensorTestCase(BaseSensorTestCase):
             'st2_server': 'st2_test',
             'st2_execution_id': '',
             'st2_comments': 'Cron job did not run',
-            'st2_state': 'error'
+            'st2_state': 'open'
         }
 
         result_value = sensor.check_enforcements(**test_dict)

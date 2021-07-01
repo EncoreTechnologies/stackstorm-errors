@@ -148,7 +148,7 @@ class BaseAction(Action):
 
         error_string = error_string.replace('\n', '<br>')
 
-        return error_string
+        return error_string.encode('utf-8')
 
     def get_error_message(self, error_result):
         # Custom Error Messages returned from workflow outputs

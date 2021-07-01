@@ -88,6 +88,7 @@ class BaseAction(Action):
                     err_message = self.format_error_strings(self.get_error_message(error.result))
                 else:
                     err_message = self.get_error_message(error.result)
+                    err_message - err_message.encode('utf-8')
 
                 if "orquesta" in error.context:
                     err_string += self.get_error_string(html_tags,
@@ -114,6 +115,7 @@ class BaseAction(Action):
                     parent_error = self.errors_as_string
                 else:
                     parent_error = self.get_error_message(self.parent_error.result)
+                    parent_error = parent_error.encode('utf-8')
 
                 err_string += self.get_error_string(html_tags,
                                                     self.parent_error

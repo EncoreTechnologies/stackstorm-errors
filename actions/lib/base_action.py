@@ -51,7 +51,8 @@ class BaseAction(Action):
                 st2_executions = self.st2_client.executions
                 execution = st2_executions.get_by_id(parent_execution)
             if (str(execution.status) == "failed" or str(execution.status) == "timeout"):
-                if "orquesta" in execution.context and execution.context['orquesta']['task_name'] in ignored_error_tasks:
+                if ("orquesta" in execution.context and execution.context['orquesta']['task_name']
+                        in ignored_error_tasks):
                     pass
                 else:
                     execution_result = execution.result
@@ -88,7 +89,7 @@ class BaseAction(Action):
                     err_message = self.format_error_strings(self.get_error_message(error.result))
                 else:
                     err_message = self.get_error_message(error.result)
-                    err_message - err_message.encode('utf-8')
+                    err_message = err_message.encode('utf-8')
 
                 if "orquesta" in error.context:
                     err_string += self.get_error_string(html_tags,

@@ -181,6 +181,7 @@ class TestExecutionFindErrorResults(ErrorsBaseActionTestCase):
         mock_execution = mock.Mock(spec=True,
                                    id='test1',
                                    status='failed',
+                                   context='test_context',
                                    action={'name': 'test_action1'},
                                    result={'task_list': test_task_list,
                                            'key1': 'val1',

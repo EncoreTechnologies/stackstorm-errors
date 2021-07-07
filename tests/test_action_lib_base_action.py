@@ -347,9 +347,10 @@ class TestBaseAction(ErrorsBaseActionTestCase):
 
     def test_get_error_message_jinja(self):
         action = self.get_action_instance({})
-        expected_result = 'test_error'
+        expected_result = "\{\{ test_error \}\}"
+        test_error = "{{ test_error }}"
         test_error_result = {
-            'errors': [{'message': expected_result}]
+            'errors': [{'message': test_error}]
         }
         result = action.get_error_message(test_error_result)
         self.assertEqual(result, expected_result)

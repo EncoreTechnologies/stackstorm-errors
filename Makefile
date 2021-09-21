@@ -1,7 +1,7 @@
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 CI_REPO_PATH ?= $(ROOT_DIR)/ci
-CI_REPO_BRANCH ?= master
+CI_REPO_BRANCH ?= update/remove-py2-testing
 
 # read in pack's name from pack.yaml, export it so that the ci/Makefile
 # can access its value

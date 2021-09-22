@@ -8,3 +8,5 @@ keywords:
 version: 0.1.0
 author: Alex Chrystal
 email: code@encore.tech
+python_versions:
+  - "3"

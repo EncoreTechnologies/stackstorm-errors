@@ -97,7 +97,7 @@ class BaseAction(Action):
                                                         error.id,
                                                         err_message)
                 else:
-                    err_string += error.result['error']
+                    err_string += self.get_error_message(error.result)
         else:
             if html_tags:
                 error_result = self.parent_error.result

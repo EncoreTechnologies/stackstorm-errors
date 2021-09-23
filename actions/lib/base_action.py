@@ -89,7 +89,7 @@ class BaseAction(Action):
                     err_message = self.format_error_strings(self.get_error_message(error.result))
                 else:
                     err_message = self.get_error_message(error.result)
-                    err_message = err_message.encode('utf-8')
+                    err_message = err_message
 
                 if "orquesta" in error.context:
                     err_string += self.get_error_string(html_tags,
@@ -116,7 +116,7 @@ class BaseAction(Action):
                     parent_error = self.errors_as_string
                 else:
                     parent_error = self.get_error_message(self.parent_error.result)
-                    parent_error = parent_error.encode('utf-8')
+                    parent_error = parent_error
 
                 err_string += self.get_error_string(html_tags,
                                                     self.parent_error
@@ -151,7 +151,7 @@ class BaseAction(Action):
 
         error_string = error_string.replace('\n', '<br>')
 
-        return error_string.encode('utf-8')
+        return error_string
 
     def get_error_message(self, error_result):
         # Custom Error Messages returned from workflow outputs

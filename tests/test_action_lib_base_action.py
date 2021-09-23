@@ -249,7 +249,7 @@ class TestBaseAction(ErrorsBaseActionTestCase):
                            "Error message: test_error\n")
         test_error_result = {
             'result': 'None',
-            'stderr': 'test_error'
+            'stderr': "test_error"
         }
         mock_context = {
             'orquesta': {

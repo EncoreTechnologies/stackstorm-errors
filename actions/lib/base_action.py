@@ -31,6 +31,7 @@ class BaseAction(Action):
         self.child_error = []
         self.parent_output = []
         self.errors_as_string = ""
+        self.parent_errors = []
 
     def st2_client_initialize(self, st2_exe_id):
         st2_fqdn = socket.getfqdn()
@@ -55,6 +56,7 @@ class BaseAction(Action):
                         in ignored_error_tasks):
                     pass
                 else:
+                    self.parent_errors.append(execution)
                     execution_result = execution.result
                     if self.check_custom_errors(execution_result, execution):
                         return None
@@ -156,7 +158,7 @@ class BaseAction(Action):
     def get_error_message(self, error_result):
         # Custom Error Messages returned from workflow outputs
         if 'output' in error_result and error_result['output']:
-            if 'error' in error_result['output']:
+            if 'error' in error_result['output'] and error_result['output']['error'] is not None:
                 return error_result['output']['error']
 
         # Jinja syntax errors

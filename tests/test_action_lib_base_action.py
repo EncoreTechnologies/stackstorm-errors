@@ -72,6 +72,46 @@ class TestBaseAction(ErrorsBaseActionTestCase):
         self.assertEqual(action.parent_error, test_execution)
         self.assertEqual(action.child_error, [])
 
+    def test_find_error_execution_child_error(self):
+        action = self.get_action_instance({})
+        action.parent_error = None
+        test_ignored_tasks = []
+        mock_context = {
+            'orquesta': {
+                'task_name': 'vsphere_check'
+            }
+        }
+        mock_execution_results = {
+            'output': {
+                'errors': ''
+            }
+        }
+        test_execution = mock.Mock(children=['1235'],
+                                   context=mock_context,
+                                   status='succeeded',
+                                   result=mock_execution_results)
+        mock_child_context = {
+            'orquesta': {
+                'task_name': 'test_task'
+            }
+        }
+        mock_child_execution_results = {
+            'output': {
+                'errors': 'child_task_error'
+            }
+        }
+        test_child_execution = mock.Mock(context=mock_child_context,
+                                         status='failed',
+                                         result=mock_child_execution_results)
+        del test_child_execution.children
+
+        mock_client = mock.Mock()
+        mock_client.executions.get_by_id.return_value = test_child_execution
+        action.st2_client = mock_client
+
+        action.find_error_execution(test_execution, test_ignored_tasks)
+        self.assertEqual(action.child_error, [test_child_execution])
+
     def test_find_error_execution_ignored_email(self):
         action = self.get_action_instance({})
         action.child_error = []

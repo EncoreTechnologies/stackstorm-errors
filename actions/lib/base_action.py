@@ -31,6 +31,7 @@ class BaseAction(Action):
         self.child_error = []
         self.parent_output = []
         self.errors_as_string = ""
+        self.parent_errors = []
 
     def st2_client_initialize(self, st2_exe_id):
         st2_fqdn = socket.getfqdn()
@@ -55,6 +56,7 @@ class BaseAction(Action):
                         in ignored_error_tasks):
                     pass
                 else:
+                    self.parent_errors.append(execution)
                     execution_result = execution.result
                     if self.check_custom_errors(execution_result, execution):
                         return None
@@ -89,7 +91,7 @@ class BaseAction(Action):
                     err_message = self.format_error_strings(self.get_error_message(error.result))
                 else:
                     err_message = self.get_error_message(error.result)
-                    err_message = err_message.encode('utf-8')
+                    err_message = err_message
 
                 if "orquesta" in error.context:
                     err_string += self.get_error_string(html_tags,
@@ -97,7 +99,7 @@ class BaseAction(Action):
                                                         error.id,
                                                         err_message)
                 else:
-                    err_string += error.result['error']
+                    err_string += self.get_error_message(error.result)
         else:
             if html_tags:
                 error_result = self.parent_error.result
@@ -116,7 +118,7 @@ class BaseAction(Action):
                     parent_error = self.errors_as_string
                 else:
                     parent_error = self.get_error_message(self.parent_error.result)
-                    parent_error = parent_error.encode('utf-8')
+                    parent_error = parent_error
 
                 err_string += self.get_error_string(html_tags,
                                                     self.parent_error
@@ -151,18 +153,22 @@ class BaseAction(Action):
 
         error_string = error_string.replace('\n', '<br>')
 
-        return error_string.encode('utf-8')
+        return error_string
 
     def get_error_message(self, error_result):
         # Custom Error Messages returned from workflow outputs
         if 'output' in error_result and error_result['output']:
-            if 'error' in error_result['output']:
+            if 'error' in error_result['output'] and error_result['output']['error'] is not None:
                 return error_result['output']['error']
 
         # Jinja syntax errors
         if 'errors' in error_result:
             error = error_result['errors'][0]['message']
-            return error.replace("{{", '\{\{').replace("}}", '\}\}')
+            return error.replace("{{", '\\{\\{').replace("}}", '\\}\\}')
+
+        # StackStorm errors (ex. timeouts)
+        if 'error' in error_result:
+            return error_result['error']
 
         # Bolt plans (https://github.com/StackStorm-Exchange/stackstorm-bolt)
         if ('result' in error_result and

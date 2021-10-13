@@ -30,9 +30,20 @@ class GetFormattedError(BaseAction):
         st2_exe_id = kwargs['st2_exe_id']
         html_tags = kwargs['html_tags']
         ignored_error_tasks = kwargs['ignored_error_tasks']
+        errors = ""
 
         parent_execution = self.st2_client_initialize(st2_exe_id)
 
         self.find_error_execution(parent_execution, ignored_error_tasks)
+
+        if len(self.child_error) == 0:
+            self.parent_errors.append(parent_execution)
+            for exe in self.parent_errors:
+                if exe.status == 'failed' or exe.status == 'timeout':
+                    if html_tags:
+                        errors += self.format_error_strings(self.get_error_message(exe.result))
+                    else:
+                        errors += self.get_error_message(exe.result)
+            return errors
 
         return self.format_error(html_tags)

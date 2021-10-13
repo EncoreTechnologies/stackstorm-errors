@@ -59,7 +59,7 @@ class TestGetFormattedError(ErrorsBaseActionTestCase):
         }
         test_execution = mock.Mock(id='123', context=mock_context, result=test_error_result)
         mock_st2_client_initialize.return_value = test_execution
-        action.child_error = []
+        action.child_error = ["1235"]
         action.parent_error = test_execution
 
         expected_return = ("Error task: vsphere_check<br>"
@@ -97,7 +97,7 @@ class TestGetFormattedError(ErrorsBaseActionTestCase):
         }
         test_execution = mock.Mock(id='123', context=mock_context, result=test_error_result)
         mock_st2_client_initialize.return_value = test_execution
-        action.child_error = []
+        action.child_error = ["test_child_error"]
         action.parent_error = test_execution
 
         expected_return = ("Error task: vsphere_check"

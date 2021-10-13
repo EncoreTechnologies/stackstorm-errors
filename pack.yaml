@@ -5,6 +5,8 @@ description: Error pack used to generate errors for tasks/workflows
 keywords: 
     - cookiecutter
     -  errors
-version: 0.1.0
+version: 0.1.1
 author: Alex Chrystal
 email: code@encore.tech
+python_versions:
+  - "3"

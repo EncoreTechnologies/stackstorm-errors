@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.1.2
+
+Switches stackstorm-ci url to an ssh url
+
 ## v0.1.1
 
 Fixes the following bugs/issues: 

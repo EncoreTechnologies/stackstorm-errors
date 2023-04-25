@@ -25,6 +25,16 @@ class GetFormattedError(BaseAction):
         """
         super(GetFormattedError, self).__init__(config)
 
+    def parse_errors_list(self, errors):
+        error_string = ""
+        for error in errors:
+            if isinstance(error, dict):
+                error_string += error['error']
+            else:
+                error_string += error
+
+        return error_string
+
     def run(self, **kwargs):
 
         st2_exe_id = kwargs['st2_exe_id']
@@ -43,6 +53,9 @@ class GetFormattedError(BaseAction):
                     if html_tags:
                         errors += self.format_error_strings(self.get_error_message(exe.result))
                     else:
+                        errors = self.get_error_message(exe.result)
+                        if isinstance(errors, list):
+                            errors += self.parse_errors_list(errors)
                         errors += self.get_error_message(exe.result)
             return errors
 

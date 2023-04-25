@@ -171,9 +171,9 @@ class BaseAction(Action):
             return error_result['error']
 
         # Bolt plans (https://github.com/StackStorm-Exchange/stackstorm-bolt)
-        if ('result' in error_result and
-           error_result['result'] and
-           error_result['result'] != 'None'):
+        if ('result' in error_result
+            and error_result['result']
+                and error_result['result'] != 'None'):
             if 'details' in error_result['result']:
                 if 'result_set' in error_result['result']['details']:
                     result_set = error_result['result']['details']['result_set'][0]

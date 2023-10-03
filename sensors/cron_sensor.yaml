@@ -3,6 +3,7 @@
   entry_point: "cron_sensor.py"
   description: "Sensor to check to make sure our cron rules are running and succeeding"
   poll_interval: 300
+  enabled: true
   trigger_types:
     -
       name: "error_cron_event"

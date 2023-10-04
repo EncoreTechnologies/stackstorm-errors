@@ -1,5 +1,11 @@
 # Change Log
 
+## v1.0.1
+
+ * Enabling sensor in sensor parameters
+
+Contributed by Alex Chrystal (Encore Technologies)
+
 ## v1.0.0
 
  * Moving to GitHub Actions from CircleCi

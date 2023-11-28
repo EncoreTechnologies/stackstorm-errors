@@ -88,9 +88,9 @@ class BaseAction(Action):
         if self.child_error:
             for error in self.child_error:
                 if html_tags:
-                    err_message = self.format_error_strings(self.get_error_message(error.result))
+                    err_message = self.format_error_strings(self.get_error_message(error.result, error))
                 else:
-                    err_message = self.get_error_message(error.result)
+                    err_message = self.get_error_message(error.result, error)
                     err_message = err_message
 
                 if "orquesta" in error.context:
@@ -99,14 +99,14 @@ class BaseAction(Action):
                                                         error.id,
                                                         err_message)
                 else:
-                    err_string += self.get_error_message(error.result)
+                    err_string += self.get_error_message(error.result, error)
         else:
             if html_tags:
                 error_result = self.parent_error.result
                 if self.errors_as_string:
                     parent_error = self.errors_as_string
                 else:
-                    parent_error = self.get_error_message(error_result)
+                    parent_error = self.get_error_message(error_result, self.parent_error)
                 err_message = self.format_error_strings(parent_error)
                 err_string += self.get_error_string(html_tags,
                                                     self.parent_error
@@ -117,7 +117,7 @@ class BaseAction(Action):
                 if self.errors_as_string:
                     parent_error = self.errors_as_string
                 else:
-                    parent_error = self.get_error_message(self.parent_error.result)
+                    parent_error = self.get_error_message(self.parent_error.result, self.parent_error)
                     parent_error = parent_error
 
                 err_string += self.get_error_string(html_tags,
@@ -135,6 +135,15 @@ class BaseAction(Action):
         else:
             return ("Error task: {0}\nError execution ID: {1}\nError message: {2}"
                     "\n".format(err_context, err_id, err_message))
+        
+    def get_error_string(self, html_tags, err_context, err_id, err_message):
+        if html_tags:
+            line = '<br>'
+        else:
+            line = '\n'
+
+        return ("Error task: {0}{3}Error execution ID: {1}{3}Error message: {2}"
+                "{3}".format(err_context, err_id, err_message, line))
 
     def format_error_strings(self, error_string):
         """ formats error strings by dropping extra string escapes
@@ -155,7 +164,7 @@ class BaseAction(Action):
 
         return error_string
 
-    def get_error_message(self, error_result):
+    def get_error_message(self, error_result, error_exe):
         # Custom Error Messages returned from workflow outputs
         if 'output' in error_result and error_result['output']:
             if 'error' in error_result['output'] and error_result['output']['error'] is not None:
@@ -168,7 +177,14 @@ class BaseAction(Action):
 
         # StackStorm errors (ex. timeouts)
         if 'error' in error_result:
-            return error_result['error']
+            messages = []
+            messages.append(error_result['error'])
+
+            if 'plan' in error_exe.parameters:
+                plan_msg = "Bolt Plan {} failed to complete successfully!".format(error_exe.parameters['plan'])
+                messages.append(plan_msg)
+
+            return messages
 
         # Bolt plans (https://github.com/StackStorm-Exchange/stackstorm-bolt)
         if ('result' in error_result and
@@ -177,7 +193,9 @@ class BaseAction(Action):
             if 'details' in error_result['result']:
                 if 'result_set' in error_result['result']['details']:
                     result_set = error_result['result']['details']['result_set'][0]
-                    return result_set['value']['_error']['msg']
+                    err_msg = result_set['value']['_error']['msg']
+                    err_msg += "\nBolt Plan: {}".format(error_exe.parameters['plan'])
+                    return err_msg
 
             if isinstance(error_result['result'], string_types):
                 return error_result['result']

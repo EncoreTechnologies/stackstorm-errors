@@ -41,9 +41,9 @@ class GetFormattedError(BaseAction):
             for exe in self.parent_errors:
                 if exe.status == 'failed' or exe.status == 'timeout':
                     if html_tags:
-                        errors += self.format_error_strings(self.get_error_message(exe.result))
+                        errors += self.format_error_strings(self.get_error_message(exe.result, exe))
                     else:
-                        errors += self.get_error_message(exe.result)
+                        errors += self.get_error_message(exe.result, exe)
             return errors
 
         return self.format_error(html_tags)

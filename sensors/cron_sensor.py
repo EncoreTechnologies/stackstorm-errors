@@ -71,6 +71,7 @@ class CronSensor(PollingSensor):
                                          poll_interval=poll_interval)
         self._logger = self._sensor_service.get_logger(__name__)
         self.trigger_ref = "errors.error_cron_event"
+        self.enhanced_trigger_ref = "errors.error_cron_event_enhanced"
 
     def setup(self):
         self.st2_fqdn = socket.getfqdn()
@@ -95,6 +96,9 @@ class CronSensor(PollingSensor):
         # as a string value so we need to convert it.
         if not isinstance(self.kv_enforcements, dict):
             self.kv_enforcements = ast.literal_eval(self.kv_enforcements)
+
+        # Convert to new format temporarily for migration but keep using original format
+        self._migrated_kv = self._migrate_kv_format(self.kv_enforcements)
 
         self._logger.info("Current problem rules: {0}".format(self.kv_enforcements))
 
@@ -199,6 +203,8 @@ class CronSensor(PollingSensor):
                          st2_comments="",
                          st2_enforcement_id=None,
                          st2_state="error"):
+        previous_state = self._get_previous_state(st2_rule_name)
+
         trigger_payload = {
             'st2_rule_name': st2_rule_name,
             'st2_server': st2_server,
@@ -206,14 +212,24 @@ class CronSensor(PollingSensor):
             'st2_comments': st2_comments,
             'st2_state': st2_state
         }
+
+        enhanced_trigger_payload = trigger_payload.copy()
+        enhanced_trigger_payload['st2_previous_state'] = previous_state
+
         if st2_state == "success":
             self._sensor_service.dispatch(trigger=self.trigger_ref, payload=trigger_payload)
+            self._sensor_service.dispatch(trigger=self.enhanced_trigger_ref,
+                                          payload=enhanced_trigger_payload)
             return True
 
         if self.check_before_dispatch(st2_rule_name, st2_enforcement_id):
             self._logger.info("Sending trigger with payload: {0}".format(trigger_payload))
+            self._logger.info("Sending enhanced trigger with previous state: {0}".format(
+                previous_state))
 
             self._sensor_service.dispatch(trigger=self.trigger_ref, payload=trigger_payload)
+            self._sensor_service.dispatch(trigger=self.enhanced_trigger_ref,
+                                          payload=enhanced_trigger_payload)
 
             if st2_enforcement_id:
                 self.kv_enforcements[st2_rule_name] = st2_enforcement_id
@@ -222,7 +238,7 @@ class CronSensor(PollingSensor):
 
         else:
             self._logger.info("Already dispatched trigger. Waiting till another enforcement before"
-                             " dispatching another trigger.")
+                              " dispatching another trigger.")
 
         return True
 
@@ -279,6 +295,30 @@ class CronSensor(PollingSensor):
         ]
 
         return " ".join(cron_tab)
+
+    def _migrate_kv_format(self, kv_data):
+        """ Migrates old key-value format to new enhanced format
+        Old: {'rule_name': 'enforcement_id'}
+        New: {'rule_name': {'enforcement_id': 'id', 'previous_state': 'state'}}
+        """
+        migrated_data = {}
+        for rule_name, value in kv_data.items():
+            if isinstance(value, dict):
+                # Already in new format
+                migrated_data[rule_name] = value
+            else:
+                # Old format - migrate
+                migrated_data[rule_name] = {
+                    'enforcement_id': value,
+                    'previous_state': 'unknown'
+                }
+        return migrated_data
+
+    def _get_previous_state(self, rule_name):
+        """ Gets the previous state for a rule """
+        if rule_name in self._migrated_kv:
+            return self._migrated_kv[rule_name].get('previous_state', 'unknown')
+        return 'unknown'
 
     def cleanup(self):
         pass

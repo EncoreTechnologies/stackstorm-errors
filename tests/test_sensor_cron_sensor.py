@@ -273,7 +273,7 @@ class CronSensorTestCase(BaseSensorTestCase):
                                      enforced_at='2018-10-26T01:00:00.01Z',
                                      rule={'ref': 'test_rule'})
         mock_rule_enforcement = mock.Mock(id="test_id",
-                                         failure_reason="test_failure")
+                                          failure_reason="test_failure")
 
         mock_st2_client = mock.MagicMock()
         mock_st2_client.ruleenforcements.get_by_id.return_value = mock_rule_enforcement
@@ -309,7 +309,7 @@ class CronSensorTestCase(BaseSensorTestCase):
                                      enforced_at='2018-10-26T01:00:00.01Z',
                                      rule={'ref': 'test_rule'})
         mock_rule_enforcement = mock.Mock(id="test_id",
-                                         failure_reason='{{ test_failure }}')
+                                          failure_reason='{{ test_failure }}')
 
         mock_st2_client = mock.MagicMock()
         mock_st2_client.ruleenforcements.get_by_id.return_value = mock_rule_enforcement
@@ -341,8 +341,8 @@ class CronSensorTestCase(BaseSensorTestCase):
         sensor.kv_enforcements = {}
 
         mock_enforcement = mock.Mock(enforced_at='2018-10-26T01:00:00.01Z',
-                                    execution_id='test',
-                                    rule={'ref': 'test_rule'})
+                                     execution_id='test',
+                                     rule={'ref': 'test_rule'})
         mock_execution = mock.Mock(status='succeeded')
 
         mock_st2_client = mock.MagicMock()
@@ -487,3 +487,119 @@ class CronSensorTestCase(BaseSensorTestCase):
         expected_return = '* * * * * 4 *'
         result_value = sensor.convert_to_crontab(test_dict)
         self.assertEqual(result_value, expected_return)
+
+    # Enhanced functionality tests
+    def test_migrate_kv_format_old_to_new(self):
+        sensor = self.get_sensor_instance()
+        old_format = {
+            'rule1': 'enforcement_id_1',
+            'rule2': 'error without enforcement id'
+        }
+
+        result = sensor._migrate_kv_format(old_format)
+
+        expected = {
+            'rule1': {'enforcement_id': 'enforcement_id_1', 'previous_state': 'unknown'},
+            'rule2': {'enforcement_id': 'error without enforcement id', 'previous_state': 'unknown'}
+        }
+        self.assertEqual(result, expected)
+
+    def test_migrate_kv_format_already_new(self):
+        sensor = self.get_sensor_instance()
+        new_format = {
+            'rule1': {'enforcement_id': 'enforcement_id_1', 'previous_state': 'error'}
+        }
+
+        result = sensor._migrate_kv_format(new_format)
+        self.assertEqual(result, new_format)
+
+    def test_get_previous_state(self):
+        sensor = self.get_sensor_instance()
+        sensor.kv_enforcements = {
+            'rule1': {'enforcement_id': 'id1', 'previous_state': 'error'},
+            'rule2': {'enforcement_id': 'id2'}  # missing previous_state
+        }
+
+        self.assertEqual(sensor._get_previous_state('rule1'), 'error')
+        self.assertEqual(sensor._get_previous_state('rule2'), 'unknown')
+        self.assertEqual(sensor._get_previous_state('nonexistent'), 'unknown')
+
+    def test_set_rule_state(self):
+        sensor = self.get_sensor_instance()
+        sensor.kv_enforcements = {}
+
+        sensor._set_rule_state('test_rule', 'test_enforcement', 'error')
+
+        expected = {'test_rule': {'enforcement_id': 'test_enforcement', 'previous_state': 'error'}}
+        self.assertEqual(sensor.kv_enforcements, expected)
+
+    def test_enhanced_trigger_dispatch_error(self):
+        sensor = self.get_sensor_instance()
+        sensor.st2_fqdn = 'st2_test'
+        sensor.kv_enforcements = {}
+
+        test_dict = {
+            'st2_rule_name': 'test_rule',
+            'st2_server': 'st2_test',
+            'st2_execution_id': 'st2_test_execution',
+            'st2_comments': 'test_comments',
+            'st2_state': 'error'
+        }
+
+        sensor.dispatch_trigger(**test_dict)
+
+        # Check both triggers were dispatched
+        trigger_payload = {
+            'st2_rule_name': 'test_rule',
+            'st2_server': 'st2_test',
+            'st2_execution_id': 'st2_test_execution',
+            'st2_comments': 'test_comments',
+            'st2_state': 'error'
+        }
+
+        enhanced_trigger_payload = trigger_payload.copy()
+        enhanced_trigger_payload['st2_previous_state'] = 'unknown'
+
+        self.assertTriggerDispatched(trigger='errors.error_cron_event',
+                                     payload=trigger_payload)
+        self.assertTriggerDispatched(trigger='errors.error_cron_event_enhanced',
+                                     payload=enhanced_trigger_payload)
+
+    def test_enhanced_trigger_dispatch_success_with_previous_error(self):
+        sensor = self.get_sensor_instance()
+        sensor.st2_fqdn = 'st2_test'
+        sensor.kv_enforcements = {'test_rule': {'enforcement_id': 'old_id',
+                                                'previous_state': 'error'}}
+
+        test_dict = {
+            'st2_rule_name': 'test_rule',
+            'st2_server': 'st2_test',
+            'st2_execution_id': 'new_execution',
+            'st2_comments': 'Cronjob recovered',
+            'st2_state': 'success',
+            'st2_enforcement_id': 'new_enforcement'
+        }
+
+        sensor.dispatch_trigger(**test_dict)
+
+        # Check both triggers were dispatched
+        trigger_payload = {
+            'st2_rule_name': 'test_rule',
+            'st2_server': 'st2_test',
+            'st2_execution_id': 'new_execution',
+            'st2_comments': 'Cronjob recovered',
+            'st2_state': 'success'
+        }
+
+        enhanced_trigger_payload = trigger_payload.copy()
+        enhanced_trigger_payload['st2_previous_state'] = 'error'
+
+        self.assertTriggerDispatched(trigger='errors.error_cron_event',
+                                     payload=trigger_payload)
+        self.assertTriggerDispatched(trigger='errors.error_cron_event_enhanced',
+                                     payload=enhanced_trigger_payload)
+
+        # Verify state was updated
+        expected_kv = {'test_rule': {'enforcement_id': 'new_enforcement',
+                                     'previous_state': 'success'}}
+        self.assertEqual(sensor.kv_enforcements, expected_kv)

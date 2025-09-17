@@ -33,3 +33,29 @@
           st2_state:
             type: "string"
             format: "The state that the error event should be in"
+    -
+      name: "error_cron_event_enhanced"
+      description: "Enhanced trigger with previous state tracking for cron job state transitions"
+      payload_schema:
+        type: "object"
+        properties:
+          st2_comments:
+            type: "string"
+            format: "Comments on what is happening with the cron job."
+          st2_execution_id:
+            type: "string"
+            format: "Stackstorm execution id"
+            default: ""
+          st2_rule_name:
+            type: "string"
+            format: "Stackstorm rule name"
+          st2_server:
+            type: "string"
+            format: "Stackstorm server with the Cron error"
+          st2_state:
+            type: "string"
+            format: "The current state that the error event should be in"
+          st2_previous_state:
+            type: "string"
+            format: "The previous state of the cron job for tracking state transitions"
+            default: "unknown"

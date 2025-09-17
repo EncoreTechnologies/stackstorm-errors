@@ -2,10 +2,10 @@
 ref: errors
 name: errors
 description: Error pack used to generate errors for tasks/workflows
-keywords: 
+keywords:
     - cookiecutter
     - errors
-version: 1.0.1
+version: 1.0.2
 author: Alex Chrystal
 email: code@encore.tech
 python_versions:

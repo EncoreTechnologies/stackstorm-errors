@@ -1,5 +1,11 @@
 # Change Log
 
+## v1.0.2
+
+ * Adds new trigger payload to track previous state
+
+Contributed by Jacob Huff (Encore Technologies)
+
 ## v1.0.1
 
  * Enabling sensor in sensor parameters
@@ -18,7 +24,7 @@ Switches stackstorm-ci url to an ssh url
 
 ## v0.1.1
 
-Fixes the following bugs/issues: 
+Fixes the following bugs/issues:
 	- executions where all tasks succeed but workflow fails were not detected
 	- adds support for generic StackStorm errors like timouts
 	- removes byte conversions to unicode

@@ -1,5 +1,9 @@
 # Change Log
 
+## v1.0.3
+
+ * Adds gracefull handling of executions with no parents. Considers 'cancelled' items non-errors
+
 ## v1.0.2
 
  * Adds new trigger payload to track previous state

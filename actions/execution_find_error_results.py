@@ -41,14 +41,18 @@ ERRORED_STATUSES = [
     st2client.commands.action.LIVEACTION_STATUS_FAILED,
     st2client.commands.action.LIVEACTION_STATUS_TIMED_OUT,
     st2client.commands.action.LIVEACTION_STATUS_ABANDONED,
-    st2client.commands.action.LIVEACTION_STATUS_CANCELED
+]
+
+CANCELED_STATUSES = [
+    st2client.commands.action.LIVEACTION_STATUS_CANCELED,
 ]
 
 STACKSTORM_STATUSES = {
     'queued': QUEUED_STATUSES,
     'running': PROGRESS_STATUSES,
     'succeeded': COMPLETED_STATUSES,
-    'failed': ERRORED_STATUSES
+    'failed': ERRORED_STATUSES,
+    'canceled': CANCELED_STATUSES,
 }
 
 COMPLETED_STATUSES = [
@@ -84,6 +88,8 @@ class ExecutionFindErrorResults(BaseAction):
 
         if st2_status == 'failed':
             execution_status['st2_execution_comments'] = self.format_error(html_tags=False)
+        elif st2_status == 'canceled':
+            execution_status['st2_execution_comments'] = "Execution was canceled by an operator."
         elif st2_status == 'unknown':
             execution_status['st2_execution_comments'] = ("Could not find execution_id "
                                                           "in database")

@@ -32,6 +32,10 @@ class BaseAction(Action):
         self.parent_output = []
         self.errors_as_string = ""
         self.parent_errors = []
+        # Set in find_error_execution()/check_custom_errors() only when a failed
+        # or timed-out child is found. Initialize to None so format_error() can
+        # be reached for canceled/abandoned executions without AttributeError.
+        self.parent_error = None
 
     def st2_client_initialize(self, st2_exe_id):
         st2_fqdn = socket.getfqdn()
